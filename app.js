@@ -4,7 +4,6 @@ const session = require("cookie-session");
 const { createClient } = require("@supabase/supabase-js");
 const bodyParser = require("body-parser");
 const { sha256 } = require("js-sha256");
-const env = require("dotenv").config();
 
 // Create an express app
 const app = express();
