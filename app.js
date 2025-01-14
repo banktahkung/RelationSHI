@@ -4,6 +4,7 @@ const session = require("cookie-session");
 const { createClient } = require("@supabase/supabase-js");
 const bodyParser = require("body-parser");
 const { sha256 } = require("js-sha256");
+const env = require("dotenv").config();
 
 // Create an express app
 const app = express();
@@ -29,8 +30,8 @@ const passwordEx = "bank";
 
 // Create a supabase client
 const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_KEY
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY
 );
 
 // GET method route
@@ -58,12 +59,16 @@ app.post("/login", async (req, res) => {
   const email = data.email;
   const password = data.password;
 
+  console.log(hash(email));
+  console.log(hash(password));
+
   // Fetch the data from the server
   try {
     const { resultdata, error } = await supabase
       .from("UserData")
       .select("Email, Password")
-      .eq("Email", hash(email), "Password", hash(data.password));
+      .eq("Email", hash(email))
+      .eq("Password", hash(password));
 
     // Check if there is an error
     if (error) {
@@ -94,7 +99,8 @@ app.post("/register", async (req, res) => {
     const { resultdata, error } = await supabase
       .from("UserData")
       .select("Email, Password")
-      .eq("Email", hash(email), "Password", hash(data.password));
+      .eq("Email", hash(email))
+      .eq("Password", hash(password));
 
     // Check if there is an error
     if (error) {
@@ -115,7 +121,6 @@ app.post("/register", async (req, res) => {
       throw err;
       return;
     }
-
   } catch (err) {
     console.error(err);
   }
