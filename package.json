@@ -1,0 +1,23 @@
+{
+  "name": "tonder",
+  "version": "1.0.0",
+  "description": "This project reserve for the matching application",
+  "main": "app.js",
+  "scripts": {
+    "test": "nodemon app.js"
+  },
+  "keywords": [
+    "Tonder"
+  ],
+  "author": "ByeHubZzz",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.47.13",
+    "body-parser": "^1.20.3",
+    "cookie-session": "^2.1.0",
+    "env": "^0.0.2",
+    "express": "^4.21.2",
+    "js-sha256": "^0.11.0",
+    "nodemailer": "^6.9.16"
+  }
+}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" href="/css/signup.css" />
+  </head>
+  <body>
+    <div class="Header">
+      <div class="HeaderLogo">
+        <img class="Logo" src="/images/logo.png" alt="logo" />
+      </div>
+
+      <div class="HeaderTitle">
+        <div class="Left Title">Relation</div>
+        <div class="Right Title">SHI</div>
+      </div>
+      <div class="SubTitle">Let us know your relationship</div>
+    </div>
+
+    <div class="SignupContainer">
+      <div class="Signup">
+        <div class="SignupInput">
+          <div class="Indicator Email">💌</div>
+          <input id="email" type="text" placeholder="Email" />
+        </div>
+
+        <div class="SignupInput">
+          <div class="Indicator Password">🔒</div>
+          <input
+            id="password"
+            type="password"
+            placeholder="Password"
+            minlength="8"
+          />
+        </div>
+
+        <div class="SignupInput">
+          <div class="Indicator ConfirmPassword">🔐</div>
+          <input
+            id="confirmPassword"
+            type="password"
+            placeholder="Confirm password"
+            minlength="8"
+          />
+        </div>
+
+        <div class="SignupButtonContainer">
+          <div class="SignupButton" onclick="Signup()">I'm ready!!!</div>
+        </div>
+
+        <div class="RemainderText">
+          รหัสผ่านของท่านนั้นจะไม่สามารถกู้คืนได้หากลืมรหัสผ่าน
+        </div>
+      </div>
+    </div>
+
+    <div class="WarningContent" id="WarningContent">
+      <div class="WarningText">
+        โปรดหมุนจอเครื่องของท่านให้เป็นแนวตั้งเพื่อประสบการณ์ที่ดีกว่า
+      </div>
+    </div>
+
+    <script src="/js/signup.js"></script>
+  </body>
+</html>

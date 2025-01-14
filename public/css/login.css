@@ -1,0 +1,196 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
+
+html{
+    overflow: hidden;
+}
+
+body {
+  font-family: "Poppins", "sans-serif" !important;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  font-size: 3vw;
+  background: linear-gradient(to bottom, #fa9eba, #f8c5c3, #b6ecfd);
+  overflow: hidden;
+}
+
+/* Header of the webpage */
+.Header {
+  position: relative;
+  width: 100vw;
+  height: 30vh;
+  margin-top: 10vh;
+}
+
+.HeaderLogo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40%;
+}
+
+.Logo {
+  width: 200px;
+  height: auto;
+}
+
+/* All the login title properties [Header] */
+.HeaderTitle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Title {
+  font-size: 10vw;
+  font-weight: 500;
+}
+
+.Left {
+  color: #ff6687;
+}
+
+.Right {
+  color: #68a7d5;
+}
+
+.SubTitle {
+  margin-top: 10px;
+  font-size: 5vw;
+  color: #fff;
+  display: flex;
+  height: auto;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Login form */
+.LoginContainer {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  height: 70vh;
+}
+
+.Login {
+  position: relative;
+  width: 70vw;
+}
+
+.LoginInput {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100px;
+  font-size: 6vw;
+  margin-top: 40px;
+}
+
+.Indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  border-radius: 50%;
+  height: 100%;
+}
+
+.Indicator.Email {
+  background-color: #f15267;
+  width: 135px;
+}
+
+.Indicator.Password {
+  background-color: #fff;
+  width: 135px;
+}
+
+input {
+  margin-left: 20px;
+}
+
+#email,
+#password {
+  width: 100%;
+  height: 100%;
+  border: none;
+  font-size: 3.5vw;
+  border-radius: 100px;
+  padding: 0px 30px 0px 30px;
+}
+
+#email {
+  color: #fff;
+  background-color: #f15267;
+}
+
+#email::placeholder {
+  color: #fff;
+}
+
+#password {
+  color: #000;
+  background-color: #fff;
+}
+
+#password::placeholder {
+  color: #000;
+}
+
+/* Login button */
+.LoginButtonContainer{
+    margin-top: 10vh;
+    position: relative;
+    width: 100%;
+    height: 100px;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+}
+
+.LoginButton {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  font-size:5vw;
+  height: 100px;
+  background-color: #68a7d5;
+  color: #fff;
+  border-radius: 100px;
+  cursor: pointer;
+}
+
+/* Sign up */
+.SignUpText{
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1.5vh;
+    color: #000;
+}
+
+/* Warning Content */
+.WarningContent {
+    position: absolute;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(20px);
+    z-index: 9999;
+  }
+  
+  .WarningText {
+    color: #fff;
+    font-size: 20px;
+  }
