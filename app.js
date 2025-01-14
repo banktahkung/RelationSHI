@@ -29,8 +29,8 @@ const passwordEx = "bank";
 
 // Create a supabase client
 const supabase = createClient(
-    env.SUPABASE_URL,
-    env.SUPABASE_KEY
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_KEY
 );
 
 // GET method route
