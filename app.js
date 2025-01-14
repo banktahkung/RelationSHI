@@ -4,7 +4,6 @@ const session = require("cookie-session");
 const { createClient } = require("@supabase/supabase-js");
 const bodyParser = require("body-parser");
 const { sha256 } = require("js-sha256");
-const env = require("dotenv").config();
 
 // Create an express app
 const app = express();
@@ -23,15 +22,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // Set the port
-const port = 4000;
+const port = process.env.PORT || 4000;
 
 const emailEx = "bank";
 const passwordEx = "bank";
 
 // Create a supabase client
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
+    env.SUPABASE_URL,
+    env.SUPABASE_KEY
 );
 
 // GET method route
