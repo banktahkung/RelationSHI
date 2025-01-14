@@ -54,26 +54,26 @@ app.get("/home", (req, res) => {
 // ! Edit later
 app.post("/login", async (req, res) => {
   // Get the data from the request
-  const data = req.body;
-  const email = data.email;
-  const password = data.password;
+  const bodydata = req.body;
+  const email = bodydata.email;
+  const password = bodydata.password;
 
   console.log(hash(email));
   console.log(hash(password));
 
   // Fetch the data from the server
   try {
-    const { resultdata, error } = await supabase
-      .from("UserData")
-      .select("Email, Password")
-      .eq("Email", hash(email))
-      .eq("Password", hash(password));
-
+    const { data, error } = await supabase
+    .from("UserData")
+    .select("*");
+  
     // Check if there is an error
     if (error) {
       throw error;
       return;
     }
+
+    console.log(resultdata);
 
     // Check if the data is valid
     if (!resultdata) return res.sendStatus(400);
@@ -89,13 +89,13 @@ app.post("/login", async (req, res) => {
 
 app.post("/register", async (req, res) => {
   // Get the data from the request
-  const data = req.body;
-  const email = data.email;
-  const password = data.password;
+  const bodydata = req.body;
+  const email = bodydata.email;
+  const password = bodydata.password;
 
   // Check if the email and password is valid
   try {
-    const { resultdata, error } = await supabase
+    const { data, error } = await supabase
       .from("UserData")
       .select("Email, Password")
       .eq("Email", hash(email))
