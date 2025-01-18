@@ -3,11 +3,15 @@ function Signup() {
   const password = document.getElementById("password").value;
   const confirmPassword = document.getElementById("confirmPassword").value;
 
-  console.log(email);
-
+  // Check if the password is the same
   if (password !== confirmPassword) {
     alert("Passwords do not match");
   }
+
+  // Check if the email is academic
+  /*if (email.includes("26@student.chula.ac.th") === false) {
+    alert("Please use the academic email");
+  }*/
 
   // Fetch the data to the server
   try {
@@ -19,7 +23,7 @@ function Signup() {
       body: JSON.stringify({ email: email, password: password }),
     }).then((response) => {
       if (response.status === 200) {
-        window.location.href = "/";
+        window.location.href = "/otp";
       } else {
         alert("The email and/or password is invalid");
       }
@@ -27,4 +31,8 @@ function Signup() {
   } catch (err) {
     console.error(err);
   }
+}
+
+function GotoLogin(){
+  window.location.href = "/login";
 }

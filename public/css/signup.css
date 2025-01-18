@@ -2,16 +2,28 @@
 
 html {
   overflow: hidden;
+  font-family: "Poppins", "sans-serif" !important;
 }
 
 body {
-  font-family: "Poppins", "sans-serif" !important;
   margin: 0;
   padding: 0;
   height: 100vh;
   font-size: 3vw;
   background: linear-gradient(to bottom, #fa9eba, #f8c5c3, #b6ecfd);
   overflow: hidden;
+}
+
+/* Back to login button */
+.LoginButton {
+  background-color: #f15267;
+  padding: 20px 40px 20px 40px;
+  border-radius: 100px;
+  position: fixed;
+  top: 2.5vh;
+  left: 5vw;
+  color: #fff;
+  font-size: 4vw;
 }
 
 /* Header of the webpage */
@@ -144,7 +156,7 @@ input {
   color: #000;
 }
 
-/* Login button */
+/* Signup button */
 .SignupButtonContainer {
   margin-top: 10vh;
   position: relative;
@@ -196,4 +208,10 @@ input {
 .WarningText {
   color: #fff;
   font-size: 20px;
+}
+
+.ReminderText{
+    margin-top: 1.5vh;
+    color: #4d677a;
+    font-size: 3vw;
 }

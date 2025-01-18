@@ -1,0 +1,209 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@100;200;300;400;500;600;700&family=Titan+One&display=swap');
+
+html {
+  overflow: hidden;
+  font-family: "Poppins", "sans-serif" !important;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  font-size: 3vw;
+  background: linear-gradient(to bottom, #fa9eba, #f8c5c3, #b6ecfd);
+  overflow: hidden;
+}
+
+/* All the login title properties [Header] */
+.HeaderTitle {
+  position: relative;
+  margin-top: 10vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.Title {
+  font-size: 10vw;
+  font-weight: 500;
+}
+
+.Left {
+  color: #ff6687;
+}
+
+.Right {
+  color: #68a7d5;
+}
+
+.SubTitle {
+  position: relative;
+  margin-top: 10px;
+  font-size: 5vw;
+  color: #000000;
+  display: flex;
+  height: auto;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+/* Card container */
+.CardContainer {
+  position: relative;
+  margin-top: 10vh;
+  width: 100%;
+}
+
+.RowContainer {
+  position: relative;
+  display: flex;
+  height: 15vh;
+  margin: 20px 0px 20px 0px;
+}
+
+/* Card */
+.Card {
+  position: absolute;
+  width: 21vw;
+  top: 0vh;
+  height: 15vh;
+  transform-style: preserve-3d;
+  background-color: #ff0505;
+  border-radius: 20px;
+  margin: 20px 20px 20px 20px;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+  transition: all 0.5s ease-in-out;
+}
+
+.Card.bouncing {
+  animation: bounce 0.5s ease-in-out infinite;
+  background-color: lightgreen; /* Adjust the color */
+}
+
+.Card.selecting {
+  width: 56vw;
+  height: 40vh;
+  transition: all 0.5s ease-in-out, left 0.5s ease-in-out, top 0.5s ease-in-out;
+  z-index: 100;
+}
+
+.First.Card {
+  left: calc(50% - 31.5vw - 60px);
+}
+
+.Second.Card {
+  left: calc(50% - 10.5vw - 20px);
+}
+
+.Third.Card {
+  left: calc(50% + 10.5vw + 20px);
+}
+
+.front,
+.back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  backface-visibility: hidden;
+}
+
+.back {
+  transform: rotateY(180deg);
+  background-color: #ffffff;
+}
+
+.Card.flipped {
+  transform: rotateY(180deg);
+  transition: transform 0.75s ease-in-out;
+}
+
+/* Card Image */
+.CardImage {
+  width: calc(100% - 20px);
+  height: calc(100% - 20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background-color: #ffffff;
+  object-fit: cover;
+}
+
+/* Information Card */
+.PileOfCard {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+.InformationCard {
+  position: absolute;
+  width: 56vw;
+  height: 40vh;
+  top: calc(5vh + 20.5px);
+  left: calc(50% - 28vw + 10px);
+  background-color: #fff;
+  border-radius: 20px;
+  border: 1px solid #ff0505;
+  z-index: 21;
+}
+
+/* Prevent */
+.prevent {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 20;
+  transition: all 0.5s ease-in-out;
+}
+
+/* bounce effect */
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px); /* Adjust the bounce height */
+  }
+}
+
+/* Indicator */
+#leftIndicator,
+#rightIndicator {
+    font-family: "IBM Plex Sans Thai Looped", serif !important; 
+  position: fixed;
+  top: calc(50% - 15vh);
+  writing-mode: vertical-lr;
+  width: 5vh;
+  height: 40vh;
+  font-size: 5vw;
+  color: #ffffff;
+  opacity: 0.5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+#leftIndicator {
+  writing-mode: vertical-lr;transform: rotate(180deg);
+}
+
+#rightIndicator {
+  writing-mode: vertical-lr;
+  right: 0;
+  
+}

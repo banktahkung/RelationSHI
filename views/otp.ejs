@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sign up</title>
+    <link rel="stylesheet" type="text/css" href="/css/signup.css" />
+    <link rel="stylesheet" type="text/css" href="/css/otp.css" />
+  </head>
+  <body>
+    <div id="content">
+      <div class="LoginButton" onclick="GotoLogin()">< Login</div>
+      <div class="Header">
+        <div class="HeaderLogo">
+          <img class="Logo" src="/images/logo.png" alt="logo" />
+        </div>
+
+        <div class="HeaderTitle">
+          <div class="Left Title">Relation</div>
+          <div class="Right Title">SHI</div>
+        </div>
+        <div class="SubTitle">Let us know your relationship</div>
+      </div>
+
+      <div class="OTPcontainer">
+        <div class="OTP">
+          <div class="OTPmessage">
+            <div class="messageindicator">เราได้ส่งรหัส OTP ไปที่อีเมลล์</div>
+            <div id="Targetemail"><%= email %></div>
+            <div class="OTPInstruction">
+              โปรดกรอกรหัส OTP ที่ท่านได้รับทางอีเมลล์
+            </div>
+          </div>
+
+          <div class="OTPInput">
+            <div class="Indicator OTP">📩</div>
+            <input id="otp" type="text" placeholder="OTP" />
+          </div>
+
+          <div class="OTPButtonContainer">
+            <div class="ResendOTPButton" onclick="ResendOTP()">Resend OTP</div>
+            <div class="OTPButton" onclick="VerifyOTP()">Verify</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="WarningContent" id="WarningContent">
+        <div class="WarningText">
+          โปรดหมุนจอเครื่องของท่านให้เป็นแนวตั้งเพื่อประสบการณ์ที่ดีกว่า
+        </div>
+      </div>
+
+      <script src="/js/otp.js"></script>
+    </div>
+  </body>
+</html>

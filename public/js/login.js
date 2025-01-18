@@ -35,7 +35,7 @@ function Login() {
       body: JSON.stringify({ email: email, password: password }),
     }).then((response) => {
       if (response.status === 200) {
-        window.location.href = "/";
+        window.location.href = "/home";
       } else {
         alert("The email and/or password is invalid");
       }

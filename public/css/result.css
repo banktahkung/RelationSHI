@@ -1,0 +1,38 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
+
+html {
+  overflow: hidden;
+  font-family: "Poppins", "sans-serif" !important;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  font-size: 3vw;
+  background: linear-gradient(to bottom, #fa9eba, #f8c5c3, #b6ecfd);
+  overflow: hidden;
+}
+
+/* All the login title properties [Header] */
+.HeaderTitle {
+  position: relative;
+  margin-top: 10vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.Title {
+  font-size: 10vw;
+  font-weight: 500;
+}
+
+.Left {
+  color: #ff6687;
+}
+
+.Right {
+  color: #68a7d5;
+}
