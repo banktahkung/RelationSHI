@@ -90,6 +90,8 @@ app.post("/login", async (req, res) => {
   const email = bodydata.email;
   const password = bodydata.password;
 
+  if(email == process.env.EMAIL) return res.sendStatus(400);
+
   // Fetch the data from the server
   try {
     // Check whether the data is valid
@@ -125,6 +127,8 @@ app.post("/register", async (req, res) => {
   const bodydata = req.body;
   const email = bodydata.email;
   const password = bodydata.password;
+
+  if(email == process.env.EMAIL) return res.sendStatus(400);
 
   // Check if the email and password is valid
   try {
