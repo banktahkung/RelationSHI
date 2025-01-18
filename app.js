@@ -95,7 +95,7 @@ app.post("/login", async (req, res) => {
     // Check whether the data is valid
     const { data,error } = await supabase
       .from("UserData")
-      .select("Email, Password")
+      .select("Email")
       .eq("Email", hash(email).toString())
       .eq("Password", hash(password).toString());
 
@@ -106,7 +106,7 @@ app.post("/login", async (req, res) => {
     }
 
     // Check if the data is valid
-    if (!data) return res.sendStatus(400);
+    if (data.length == 0) return res.sendStatus(400);
 
   } catch (err) {
     console.error(err);
@@ -130,7 +130,7 @@ app.post("/register", async (req, res) => {
   try {
     const { data, error } = await supabase
       .from("UserData")
-      .select("Email, Password")
+      .select("Email")
       .eq("Email", hash(email));
 
     // Check if there is an error
@@ -140,7 +140,7 @@ app.post("/register", async (req, res) => {
     }
 
     // Check if the data is valid
-    if (data) return res.sendStatus(400);
+    if (data.length > 0) return res.sendStatus(400);
 
     // Sending the OTP to the target email
     const OTP = Math.floor(100000 + Math.random() * 900000);
@@ -220,9 +220,7 @@ function sendOTP(email, OTP) {
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       console.log(error);
-    } else {
-      console.log("Email sent: " + info.response);
-    }
+    } 
   });
 }
 
