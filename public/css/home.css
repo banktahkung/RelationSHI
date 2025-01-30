@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@100;200;300;400;500;600;700&family=Titan+One&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@100;200;300;400;500;600;700&family=Titan+One&display=swap");
 
 html {
   overflow: hidden;
@@ -150,7 +150,7 @@ body {
   width: 56vw;
   height: 40vh;
   top: calc(5vh + 20.5px);
-  left: calc(50% - 28vw + 10px);
+  left: calc(50% - 28vw + 5px);
   background-color: #fff;
   border-radius: 20px;
   border: 1px solid #ff0505;
@@ -183,28 +183,95 @@ body {
 /* Indicator */
 #leftIndicator,
 #rightIndicator {
-    font-family: "IBM Plex Sans Thai Looped", serif !important; 
+  font-family: "IBM Plex Sans Thai Looped", serif !important;
   position: fixed;
   top: calc(50% - 15vh);
   writing-mode: vertical-lr;
   width: 5vh;
-  height: 40vh;
+  height: 50vh;
   font-size: 5vw;
   color: #ffffff;
-  opacity: 0.5;
+  opacity: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 100;
+  transition: opacity 0.5s ease-in-out;
 }
 
 #leftIndicator {
-  writing-mode: vertical-lr;transform: rotate(180deg);
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
   left: 2vw;
 }
 
 #rightIndicator {
   writing-mode: vertical-lr;
   right: 2vw;
-  
+}
+
+/* Card styling */
+.Nickname {
+  display: flex;
+  font-size: 3vh;
+  width: 100%;
+  height: 5vh;
+  align-items: center;
+  justify-content: center;
+  font-family: "IBM Plex Sans Thai Looped", serif !important;
+}
+
+.Age,
+.Height,
+.Program,
+.Description {
+  display: flex;
+  margin-left: 20px;
+  font-size: 3.75vw;
+  font-family: "IBM Plex Sans Thai Looped", serif !important;
+  width: calc(100% - 40px);
+}
+
+.Description {
+  height: 50%;
+  overflow-wrap: break-word; /* Ensures long words break onto the next line */
+  word-break: break-word; /* Handles edge cases with very long unbreakable text */
+  white-space: normal; /* Allows wrapping of text */
+  overflow: hidden; /* Hides overflowing text */
+  text-overflow: ellipsis; /* Adds "..." for overflowing text */
+  display: -webkit-box; /* Enables multi-line ellipsis */
+  -webkit-box-orient: vertical;
+}
+
+.CardImage {
+  border-radius: 20px;
+  object-fit: cover;
+}
+
+/* Card accept and reject area */
+#cardAcceptArea,
+#cardRejectArea {
+  left: calc(50% - 50vw);
+  position: fixed;
+  width: 100vw;
+  height: 70vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  border-radius: 50%;
+  transition: top 0.5s ease-in-out, background-color 0.5s ease-in-out,
+    bottom 0.5s ease-in-out;
+  font-size: 20vw;
+  color: #fff;
+}
+
+#cardAcceptArea {
+  top: -100vw;
+  background-color: #45e68d;
+}
+
+#cardRejectArea {
+  bottom: -100vw;
+  background-color: #ff6687;
 }

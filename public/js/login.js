@@ -35,7 +35,15 @@ function Login() {
       body: JSON.stringify({ email: email, password: password }),
     }).then((response) => {
       if (response.status === 200) {
-        window.location.href = "/home";
+
+        const body = document.getElementById("body");
+
+        body.style.transition = "top 1.5s ease-in-out";
+        body.style.top = "-100vh";
+
+        setTimeout(() => {
+          window.location.href = "/home";
+        }, 2000);
       } else {
         alert("The email and/or password is invalid");
       }

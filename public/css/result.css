@@ -19,20 +19,97 @@ body {
   position: relative;
   margin-top: 10vh;
   display: flex;
+  font-size: 6.25vw;
   align-items: center;
   justify-content: center;
   z-index: 50;
 }
 
 .Title {
-  font-size: 10vw;
   font-weight: 500;
 }
 
 .Left {
+  margin-left: 1.75vw;
   color: #ff6687;
 }
 
 .Right {
   color: #68a7d5;
+}
+
+/* Style the image */
+.Body {
+  position: relative;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.ImageFrame {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5vh;
+  border-radius: 50%;
+  width: 45vw;
+  height: 45vw;
+  background-color: #ff6687;
+}
+
+.image {
+  width: 95%;
+  height: 95%;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #d1d1d1;
+}
+
+.HeartImage {
+  position: absolute;
+  margin-top: 15vw;
+}
+
+/* Contact */
+.ContactContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 35vh; /* Full viewport height */
+}
+
+.ContactHeader {
+  font-size: 5vw;
+  margin-bottom: 2vh; /* Space between header and information */
+}
+
+.ContactInformation {
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  align-items: center;
+  gap: 2vh; /* Add space between IG and FB */
+}
+
+#IG,
+#FB {
+  width: 80vw;
+  height: 10vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 3.5vw;
+  border-radius: 5vw; /* Optional: rounded corners */
+}
+
+#IG {
+  background-color: #ff557a;
+  color: #fff;
+}
+
+#FB {
+  background-color: #ffffff;
+  color: #000;
 }

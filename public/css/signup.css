@@ -210,8 +210,9 @@ input {
   font-size: 20px;
 }
 
-.ReminderText{
-    margin-top: 1.5vh;
-    color: #4d677a;
-    font-size: 3vw;
+.ReminderText {
+  margin-top: 1.5vh;
+  color: #4d677a;
+  font-size: 3vw;
+  font-family: "IBM Plex Sans Thai Looped", serif !important;
 }

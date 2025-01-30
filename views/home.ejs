@@ -3,21 +3,32 @@
   <head>
     <title>RelationSHI</title>
     <link rel="stylesheet" type="text/css" href="/css/home.css" />
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon" />
   </head>
   <body>
-    <div class="Header">
-      <div class="HeaderTitle">
-        <div class="Left Title">Relation</div>
-        <div class="Right Title">SHI</div>
+      <div class="Header" id="Header" style="margin-top: 100vh;">
+        <div class="HeaderTitle">
+          <div class="Left Title">Relation</div>
+          <div class="Right Title">SHI</div>
+        </div>
+        <div class="SubTitle">Do we move forward or stop here ?</div>
       </div>
-      <div class="SubTitle">Do we move forward or stop here ?</div>
-    </div>
 
-    <div class="CardContainer"></div>
+      <div class="CardContainer" id="CardContainer"></div>
+      <div class="prevent"></div>
+      <div id="leftIndicator" class="left Indicator">
+        ปัดซ้ายเพื่อดูการ์ดข้างหลัง
+      </div>
+      <div id="rightIndicator" class="right Indicator">
+        ปัดขวาเพื่อดูการ์ดข้างหลัง
+      </div>
 
-    <div class="prevent"></div>
-    <div id="leftIndicator">ปัดซ้ายเพื่อดูการ์ดข้างหลัง</div>
-    <div id="rightIndicator">ปัดขวาเพื่อดูการ์ดข้างหลัง</div>
+      <div id="cardAcceptArea">
+        <div style="margin-top: 50%">✓</div>
+      </div>
+      <div id="cardRejectArea">
+        <div style="margin-bottom: 50%">✗</div>
+      </div>
 
     <script src="/js/home.js"></script>
   </body>
