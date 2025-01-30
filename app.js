@@ -652,9 +652,7 @@ async function getDriveImage(fileUrl, targetDir) {
       });
     }
 
-    console.log(filePath);
-
-    return filePath.split("\\")[2] + "/" + fileName;
+    return fileName;
   } catch (error) {
     console.error("Error processing image:", error);
     return null;
