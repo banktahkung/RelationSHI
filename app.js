@@ -8,8 +8,6 @@ const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
 const fs = require("fs");
 const path = require("path");
-const { get } = require("http");
-const { json } = require("stream/consumers");
 
 // Create an express app
 const app = express();
