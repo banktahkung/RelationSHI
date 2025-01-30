@@ -446,8 +446,6 @@ async function getSpreadsheetData(spreadsheetId, currentData) {
         jsonData[CurrentDataIndex]
       );
 
-      console.log(jsonData[CurrentDataIndex]);
-
       // Insert the data into the match
       Match[hash(jsonData[CurrentDataIndex]["Email Address"])] = matchDataJson;
 
@@ -517,13 +515,13 @@ async function getSpreadsheetData(spreadsheetId, currentData) {
         MatchingMessage: jsonData[CurrentDataIndex]["MatchingMessage"],
       };
       CurrentDataIndex++;
-
-      console.log(People);
     }
   } catch (error) {
     console.error("Error fetching data:", error);
     return null;
   }
+
+  console.log("Finished fetching data");
 }
 
 // > Building the tag from the current data person
@@ -653,6 +651,8 @@ async function getDriveImage(fileUrl, targetDir) {
           .pipe(dest);
       });
     }
+
+    console.log(filePath);
 
     return filePath.split("\\")[2] + "/" + fileName;
   } catch (error) {
