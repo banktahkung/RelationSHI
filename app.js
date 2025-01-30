@@ -162,7 +162,8 @@ app.get("/OTP", (req, res) => {
 app.get("/home", (req, res) => {
   if (!req.session.valid) return res.redirect("/");
 
-  if (req.session.confirmPerson) return res.redirect("/result");
+  // if (req.session.confirmPerson) return res.redirect("/result");
+  req.session.currentPerson = 0;
 
   res.render("home");
 });
@@ -179,18 +180,20 @@ app.get("/person", async (req, res) => {
 
   req.session.personSet = {};
 
+  if (!req.session.currentPerson) req.session.currentPerson = 0;
+
   // Check if the personSet is not assigned
   if (Object.keys(req.session.personSet).length == 0) {
     const SetOfPeople = await RandomPeopleSet(req.session.email);
 
     // Store the generated set of people and initialize the current person index
     req.session.personSet = SetOfPeople;
-    req.session.currentPerson = 0;
   }
 
   // Get the current person based on the session index
   const selectedPerson = req.session.personSet[req.session.currentPerson];
 
+  console.log("Selected Person:", selectedPerson);
   console.log(People[selectedPerson]);
 
   // Build the person data object based on `CurrentData`
@@ -199,8 +202,8 @@ app.get("/person", async (req, res) => {
     Name: People[selectedPerson].Name.RName,
     Description: People[selectedPerson].Description,
     ImagePath: [
-      People[selectedPerson]["First Image"],
-      People[selectedPerson]["Second Image"],
+      People[selectedPerson].ImagePath[0],
+      People[selectedPerson].ImagePath[1],
     ],
     Gender: People[selectedPerson].Sex,
     Contact: {
@@ -224,12 +227,10 @@ app.get("/resultPerson", async (req, res) => {
   // Get the current person based on the session index
   const selectedPerson = req.session.confirmPerson;
 
-  console.log(People[selectedPerson]);
-
   // Build the person data object based on `CurrentData`
   const personData = {
     IG: People[selectedPerson].Contact.IG,
-    ImagePath: People[selectedPerson]["First Image"],
+    ImagePath: People[selectedPerson].ImagePath[0],
     MatchingMessage: People[selectedPerson].MatchingMessage,
   };
 
@@ -246,7 +247,7 @@ app.get("/resultData", async (req, res) => {
 
   // Build the person data object based on `CurrentData`
   const personData = {
-    ImagePath: People[hash(req.session.email)]["First Image"],
+    ImagePath: People[hash(req.session.email)].ImagePath[0],
   };
 
   // Send the person data to the client
@@ -361,8 +362,7 @@ app.post("/resendOTP", (req, res) => {
 
 // * Confirmation
 app.post("/confirmation", async (req, res) => {
-  req.session.confirmPerson =
-    req.body.personSet[req.session.currentPerson];
+  req.session.confirmPerson = req.session.personSet[req.session.currentPerson];
 
   res.sendStatus(200);
 });
@@ -514,6 +514,7 @@ async function getSpreadsheetData(spreadsheetId, currentData) {
         Height: jsonData[CurrentDataIndex]["Height"],
         Program: jsonData[CurrentDataIndex]["Program"],
         ImagePath: [firstImagePath, secondImagePath],
+        MatchingMessage: jsonData[CurrentDataIndex]["MatchingMessage"],
       };
       CurrentDataIndex++;
 
@@ -631,33 +632,34 @@ async function getDriveImage(fileUrl, targetDir) {
       fs.mkdirSync(path.dirname(filePath), { recursive: true });
     }
 
-    // Download the image
-    const response = await drive.files.get(
-      { fileId, alt: "media" },
-      { responseType: "stream" }
-    );
+    if (!fs.existsSync(filePath)) {
+      // Download the image
+      const response = await drive.files.get(
+        { fileId, alt: "media" },
+        { responseType: "stream" }
+      );
 
-    await new Promise((resolve, reject) => {
-      const dest = fs.createWriteStream(filePath);
-      response.data
-        .on("end", () => {
-          console.log(`Image downloaded successfully to ${filePath}`);
-          resolve();
-        })
-        .on("error", (err) => {
-          console.error("Error downloading image:", err);
-          reject(err);
-        })
-        .pipe(dest);
-    });
+      await new Promise((resolve, reject) => {
+        const dest = fs.createWriteStream(filePath);
+        response.data
+          .on("end", () => {
+            console.log(`Image downloaded successfully to ${filePath}`);
+            resolve();
+          })
+          .on("error", (err) => {
+            console.error("Error downloading image:", err);
+            reject(err);
+          })
+          .pipe(dest);
+      });
+    }
 
-    return filePath;
+    return filePath.split("\\")[2] + "/" + fileName;
   } catch (error) {
     console.error("Error processing image:", error);
     return null;
   }
 }
-
 
 // > Do the following procedure
 // > 1. Select the n people with same tag (matching tag and the requested person tag)
@@ -691,7 +693,7 @@ async function RandomPeopleSet(email) {
     // Skip comparison with yourself
     if (
       key === hash(email) ||
-      !personData.Interested.toString().includes(otherPerson.Sex) || 
+      !personData.Interested.toString().includes(otherPerson.Sex) ||
       !otherPerson.Interested.toString().includes(personData.Sex)
     )
       return null;

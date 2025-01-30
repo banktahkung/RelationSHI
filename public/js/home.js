@@ -270,6 +270,7 @@ function CardUsage() {
           card.style.transition = "transform 1.2s ease-in-out";
 
           AlreadySelect = true;
+          goBack();
         } else {
           card.style.transition = "transform 0.3s ease, opacity 0.3s";
           card.style.transform = `translate(0, 0) rotate(0)`;
@@ -335,14 +336,16 @@ async function CardBuilding() {
         return;
       }
 
+      console.log(information);
+
       if (index > 1) {
         // Style the image card
         card.innerHTML = `
         <img src="/images/${
-          information.ImagePath[index - 1]
-            ? information.ImagePath[index - 1]
+          information.ImagePath[index - 2]
+            ? information.ImagePath[index - 2]
             : "logo.png"
-        }" alt="Avatar" class="CardImage">
+        }" alt="Avatar" class="ProfileImage">
       `;
       }
     });
@@ -416,6 +419,58 @@ async function Finalize() {
   setTimeout(() => {
     window.location.href = "/result";
   }, 3000);
+}
+
+// * Go back to selecting card section
+function goBack() {
+  const PileOfCard = document.getElementById("PileOfCard");
+  const cards = document.querySelectorAll(".InformationCard");
+
+  const acceptArea = document.getElementById("cardRejectArea");
+
+  acceptArea.style.bottom = "-100vh";
+
+  let drop = 0;
+
+  cards.forEach((card, index) => {
+    if (!card.classList.contains("accepted")) {
+      setTimeout(() => {
+        card.style.transition = "transform 1s ease-in-out";
+        card.style.transform = `translate(0px, 100vh) rotate(45deg)`;
+      }, 100 * (index - drop));
+
+      return;
+    }
+
+    drop++;
+  });
+
+  (currentBouncingCard = null), (currentSelectingCard = null);
+
+  const Cards = document.querySelectorAll(".Card");
+
+  const prevent = document.querySelector(".prevent");
+
+  prevent.style.display = "none";
+
+  Cards.forEach((card) => {
+    if (card.classList.contains("First"))
+      card.style.left = "calc(50% - 31.5vw - 60px)";
+    else if (card.classList.contains("Second"))
+      card.style.left = "calc(50% - 10.5vw - 20px)";
+    else card.style.left = "calc(50% + 10.5vw + 20px)";
+  });
+
+  document.querySelectorAll(".Indicator").forEach((indicator) => {
+    indicator.style.opacity = 0;
+  });
+
+  // Remove the PileOfcard and InformationCard
+  setTimeout(() => {
+    PileOfCard.innerHTML = "";
+
+    PileOfCard.remove();
+  }, 2500);
 }
 
 // Get the person
