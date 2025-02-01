@@ -1,0 +1,100 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@100;200;300;400;500;600;700&family=Titan+One&display=swap");
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: "Poppins", sans-serif !important;
+  box-sizing: border-box;
+}
+
+body {
+  font-size: 3vw;
+  background: linear-gradient(to bottom, #fa9eba, #f8c5c3, #b6ecfd);
+  position: relative;
+}
+
+#birdFly {
+  transform: rotate(90deg);
+  width: 60vw;
+  max-width: 100vw;
+  height: auto;
+  position: absolute;
+  left: calc(50% - 30vw);
+  top: -10vh;
+}
+
+#logo {
+  width: 15vw;
+  max-width: 100vw;
+  height: auto;
+  position: absolute;
+  left: calc(50% - 7.5vw);
+  top: 4vh;
+}
+
+.title {
+  position: absolute;
+  top: 13.5vh;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+  font-size: 4.5vw;
+  font-weight: bold;
+  text-align: center;
+}
+
+.cloud {
+  position: absolute;
+  width: 35vw;
+  max-width: 100vw;
+  z-index: 2;
+}
+
+#contrail {
+  position: absolute;
+  width: 35vw;
+  top: 37vh;
+  left: calc(50% - 17.5vw);
+  z-index: 0;
+}
+
+.Container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+}
+
+.Content,
+.advice,
+.ThankyouText {
+  width: 80%;
+  height: 6.25vh;
+  border-radius: 30px;
+  padding: 30px;
+  font-size: 4.5vw;
+  text-align: center;
+}
+
+.Content {
+  background-color: #4d677a;
+  color: #fff;
+}
+
+.advice {
+  background-color: #faffe2;
+  color: #000;
+}
+
+.ThankyouText{
+    background-color: #f15267;
+    height: 3vh;
+    color: #fff;
+}

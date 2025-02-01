@@ -194,3 +194,42 @@ input {
   color: #fff;
   font-size: 20px;
 }
+
+/* BY */
+#bottomIndicator {
+  position: fixed;
+  bottom: 10vh;
+  width: 100%;
+  height: 5vh;
+  font-size: 5vw;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  transition: opacity 0.5s ease-in-out;
+  z-index: 1;
+}
+
+#bottomIndicatorText {
+  width: 50%;
+  color: #ffffff;
+  text-align: center;
+  border-radius: 10px;
+  text-decoration: none;
+  background-image: linear-gradient(to right, #fa9eba, #f8c5c3, #fa9eba);
+  background-size: 200% 100%;
+  animation: liquidanimation 1s linear infinite;
+}
+
+@keyframes liquidanimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

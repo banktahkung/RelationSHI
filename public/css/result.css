@@ -126,3 +126,30 @@ body {
   display: -webkit-box; /* Enables multi-line ellipsis */
   -webkit-box-orient: vertical;
 }
+
+/* fountain */
+.heart {
+  position: absolute;
+  bottom: 0;
+  font-size: 24px;
+  color: red;
+  opacity: 1;
+}
+
+#heartCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none; /* Prevent interaction */
+}
+
+/* popularity */
+.popularityContainer{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 35vh; /* Full viewport height */ 
+}

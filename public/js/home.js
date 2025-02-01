@@ -1,12 +1,40 @@
 let currentBouncingCard = null;
 let currentSelectingCard = null;
 
+const SpecialTag = {
+  Transgender: "🏳️‍🌈",
+  Smoker: "🚬",
+  Alcoholic: "🍺",
+};
+
 window.onload = function () {
   const Header = document.getElementById("Header");
 
   Header.style.transition = "margin-top 1s ease-in-out";
   Header.style.marginTop = "0vh";
 };
+
+// DomContentLoaded event
+document.addEventListener("DOMContentLoaded", function () {
+  const warningContent = document.getElementById("WarningContent");
+
+  // Function to check the orientation
+  function checkOrientation() {
+    if (window.innerWidth > window.innerHeight) {
+      // Landscape mode
+      warningContent.style.display = "flex";
+    } else {
+      // Portrait mode
+      warningContent.style.display = "none";
+    }
+  }
+
+  // Initial check
+  checkOrientation();
+
+  // Check on resize
+  window.addEventListener("resize", checkOrientation);
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   const cardContainer = document.querySelector(".CardContainer");
@@ -133,6 +161,10 @@ function TransitionToNextPage() {
       currentSelectingCard = null;
       document.querySelectorAll(".Indicator").forEach((indicator) => {
         indicator.style.opacity = 0.5;
+
+        if (indicator.classList.contains("bottom")) {
+          indicator.style.opacity = 1;
+        }
       });
       BuildPileOfCard();
     }, 1000);
@@ -308,6 +340,27 @@ async function CardBuilding() {
     // Get the card elements
     const Card = document.querySelectorAll(".InformationCard");
 
+    function BuildingSpecialTag(card) {
+      const specialTag = information.SpecialTag;
+
+      // Loop through the special tag
+      Object.keys(specialTag).forEach((key, index) => {
+        const specialTagDiv = document.createElement("div");
+
+        if (specialTag[key] == true) {
+          specialTagDiv.classList.add("specialTag", key);
+          specialTagDiv.textContent = SpecialTag[key];
+
+          if (key == "Transgender") {
+            specialTagDiv.style.backgroundColor = "rgb(255,255,255 ,0)";
+            specialTagDiv.style.border = "1px solid #000";
+          }
+
+          card.querySelector(".SpecialTag").appendChild(specialTagDiv);
+        }
+      });
+    }
+
     Card.forEach((card, index) => {
       if (index === 0) {
         // Style the basic information
@@ -319,24 +372,40 @@ async function CardBuilding() {
             <div class="Program">ภาค : ${information.Program}</div>
             <div class="Description"> เกี่ยวกับฉัน : ${information.Description}</div>
           </div>
+          <div class="SpecialTag">
+          </div>
         `;
+
+        BuildingSpecialTag(card);
 
         // Target `.info` within the current card and update opacity
         const infoDiv = document.querySelector(".info-card");
+        const specialTagDiv = document.querySelector(".SpecialTag");
+
         if (infoDiv) {
           setTimeout(() => {
             infoDiv.style.opacity = 1;
+            specialTagDiv.style.opacity = 1;
           }, 1000);
         }
 
         return;
+      } else if (index === 1) {
+        card.innerHTML = `
+          <div class="info-card-2" style="height: 100%; position: relative; opacity: 1;">
+            <div class="HobbiesHeader" style="width: 100%; text-align: center; display: flex;"> ความสนใจ (งานอดิเรก) : </div>
+            <div class="Hobbies">${information.Hobbies}</div>
+          </div>
+          <div class="SpecialTag" style="opacity: 1">
+          </div>
+        `;
+
+        BuildingSpecialTag(card);
       }
 
       if (index > numberOfImage + 1) {
         return;
       }
-
-      console.log(information);
 
       if (index > 1) {
         // Style the image card
@@ -482,10 +551,56 @@ async function GetPerson() {
       method: "GET",
     });
 
+    if (response.status == 400) {
+      ending();
+    }
+
     // Await the JSON parsing
     const data = await response.json();
     return data.person; // Return the data
   } catch (error) {
     console.error("Error fetching test person:", error);
   }
+}
+
+function ending() {
+  // Making the card drop effect
+  const PileOfCard = document.getElementById("PileOfCard");
+  const Cards = document.querySelectorAll(".InformationCard");
+
+  let drop = 0;
+
+  Cards.forEach((card, index) => {
+    if (!card.classList.contains("accepted")) {
+      setTimeout(() => {
+        card.style.transition = "transform 1s ease-in-out";
+        card.style.transform = `translate(0px, 100vh) rotate(45deg)`;
+      }, 100 * (index - drop));
+
+      return;
+    }
+
+    drop++;
+  });
+
+  const Header = document.querySelector(".Header");
+
+  setTimeout(() => {
+    Header.style.transition = "transform 1s ease-in-out";
+    Header.style.transform = `translate(0px, 150vh) rotate(45deg)`;
+
+    document.querySelectorAll(".Indicator").forEach((indicator) => {
+      indicator.style.opacity = 0;
+    });
+  }, 400);
+
+  setTimeout(() => {
+    PileOfCard.style.opacity = 0;
+    PileOfCard.style.zIndex = -1;
+    PileOfCard.style.transition = "opacity 1s ease-in-out";
+  }, 1000);
+
+  setTimeout(() => {
+    window.location.href = "/unexpected";
+  }, 2000);
 }

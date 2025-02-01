@@ -65,3 +65,25 @@ function Transition() {
 function GotoLogin() {
   window.location.href = "/login";
 }
+
+// DomContentLoaded event
+document.addEventListener("DOMContentLoaded", function () {
+  const warningContent = document.getElementById("WarningContent");
+
+  // Function to check the orientation
+  function checkOrientation() {
+    if (window.innerWidth > window.innerHeight) {
+      // Landscape mode
+      warningContent.style.display = "flex";
+    } else {
+      // Portrait mode
+      warningContent.style.display = "none";
+    }
+  }
+
+  // Initial check
+  checkOrientation();
+
+  // Check on resize
+  window.addEventListener("resize", checkOrientation);
+});

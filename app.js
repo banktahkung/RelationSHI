@@ -5,7 +5,7 @@ const { createClient } = require("@supabase/supabase-js");
 const bodyParser = require("body-parser");
 const { sha256 } = require("js-sha256");
 const nodemailer = require("nodemailer");
-const { google } = require("googleapis");
+const { google, checks_v1alpha } = require("googleapis");
 const fs = require("fs");
 const path = require("path");
 
@@ -78,6 +78,9 @@ let CurrentDataIndex = 0;
 
 // List of the person
 let People = {};
+
+// List of the number of matching per person
+let NUM_MATCHING = {};
 
 // Sample data
 const samplePerson = {
@@ -159,11 +162,24 @@ app.get("/OTP", (req, res) => {
   res.render("otp", { email: req.session.email });
 });
 
-app.get("/home", (req, res) => {
+app.get("/home", async (req, res) => {
   if (!req.session.valid) return res.redirect("/");
 
-  // if (req.session.confirmPerson) return res.redirect("/result");
-  req.session.currentPerson = 0;
+  req.session.personSet = {};
+
+  // Get the data from the database
+  const { data, error } = await supabase
+    .from("UserInformation")
+    .select("randomPeople, randomIndex, popularity")
+    .eq("Email", hash(req.session.email));
+
+  if (data !== null && data.length > 0) {
+    req.session.personSet = data[0].randomPeople;
+    req.session.currentPerson = data[0].randomIndex ? data[0].randomIndex : 0;
+    NUM_MATCHING[hash(req.session.email)] = data[0].popularity? data[0].popularity : 0;
+  }
+
+  if (req.session.confirmPerson) return res.redirect("/result");
 
   res.render("home");
 });
@@ -174,17 +190,27 @@ app.get("/result", (req, res) => {
   res.render("result");
 });
 
+app.get("/unexpected", (req, res) => {
+  res.render("unexpected");
+});
+
 app.get("/person", async (req, res) => {
   // Prevent the user from accessing the data without logging in
-  if (!req.session.email || !req.session.valid) return res.sendStatus(400);
-
-  req.session.personSet = {};
+  if (!req.session.email || !req.session.valid) return res.sendStatus(400);  
 
   if (!req.session.currentPerson) req.session.currentPerson = 0;
 
   // Check if the personSet is not assigned
   if (Object.keys(req.session.personSet).length == 0) {
     const SetOfPeople = await RandomPeopleSet(req.session.email);
+
+    // Update the set of people into the database
+    const { data, error } = await supabase
+      .from("UserInformation")
+      .update({
+        randomPeople: SetOfPeople,
+      })
+      .eq("Email", hash(req.session.email));
 
     // Store the generated set of people and initialize the current person index
     req.session.personSet = SetOfPeople;
@@ -193,31 +219,46 @@ app.get("/person", async (req, res) => {
   // Get the current person based on the session index
   const selectedPerson = req.session.personSet[req.session.currentPerson];
 
-  console.log("Selected Person:", selectedPerson);
-  console.log(People[selectedPerson]);
+  if (selectedPerson) {
+    // Build the person data object based on `CurrentData`
+    const personData = {
+      Nickname: People[selectedPerson].Name.Nickname,
+      Name: People[selectedPerson].Name.RName,
+      Description: People[selectedPerson].Description,
+      ImagePath: [
+        People[selectedPerson].ImagePath[0],
+        People[selectedPerson].ImagePath[1],
+      ],
+      Gender: People[selectedPerson].Sex,
+      Contact: {
+        IG: People[selectedPerson].Contact.IG,
+      },
+      Age: People[selectedPerson].Age,
+      Height: People[selectedPerson].Height,
+      Program: People[selectedPerson].Program,
+      SpecialTag: {
+        Transgender: People[selectedPerson].SpecialTag.Transgender,
+        Smoker: People[selectedPerson].SpecialTag.Smoker,
+        Alcoholic: People[selectedPerson].SpecialTag.Alcoholic,
+      },
+      Hobbies: People[selectedPerson].Hobbies,
+    };
 
-  // Build the person data object based on `CurrentData`
-  const personData = {
-    Nickname: People[selectedPerson].Name.Nickname,
-    Name: People[selectedPerson].Name.RName,
-    Description: People[selectedPerson].Description,
-    ImagePath: [
-      People[selectedPerson].ImagePath[0],
-      People[selectedPerson].ImagePath[1],
-    ],
-    Gender: People[selectedPerson].Sex,
-    Contact: {
-      IG: People[selectedPerson].Contact.IG,
-    },
-    Age: People[selectedPerson].Age,
-    Height: People[selectedPerson].Height,
-    Program: People[selectedPerson].Program,
-  };
+    req.session.currentPerson++;
 
-  req.session.currentPerson++;
+    // Update the current Person
+    const { data2, error2 } = await supabase
+      .from("UserInformation")
+      .update({
+        randomIndex: req.session.currentPerson,
+      })
+      .eq("Email", hash(req.session.email));
 
-  // Send the person data to the client
-  res.send({ person: personData });
+    // Send the person data to the client
+    return res.send({ person: personData });
+  }
+
+  res.sendStatus(400);
 });
 
 app.get("/resultPerson", async (req, res) => {
@@ -254,6 +295,10 @@ app.get("/resultData", async (req, res) => {
   res.send({ person: personData });
 });
 
+app.get("/popularity", async (req, res) => {
+  res.send({ pop: NUM_MATCHING[hash(req.session.email)] });
+});
+
 // POST method route
 // ! Edit later
 app.post("/login", async (req, res) => {
@@ -279,6 +324,8 @@ app.post("/login", async (req, res) => {
       return;
     }
 
+    console.log(data);
+
     // Check if the data is valid
     if (data.length == 0) return res.sendStatus(400);
   } catch (err) {
@@ -301,6 +348,18 @@ app.post("/register", async (req, res) => {
 
   if (email == process.env.EMAIL) return res.sendStatus(400);
 
+  const firstThree = email.substring(0, 3);
+
+  const allowance = ["644", "654", "664", "674"];
+
+  let check = true;
+
+  allowance.forEach((element) => {
+    if (element == firstThree) check = false;
+  });
+
+  if (check && !(email == "sawitree@cbs.chula.ac.th" || email == "banktahkung@gmail.com")) return res.sendStatus(400);
+
   // Check if the email and password is valid
   try {
     const { data, error } = await supabase
@@ -313,6 +372,8 @@ app.post("/register", async (req, res) => {
       throw error;
       return;
     }
+
+    console.log(data);
 
     // Check if the data is valid
     if (data.length > 0) return res.sendStatus(400);
@@ -362,7 +423,13 @@ app.post("/resendOTP", (req, res) => {
 
 // * Confirmation
 app.post("/confirmation", async (req, res) => {
+  req.session.currentPerson--;
+
   req.session.confirmPerson = req.session.personSet[req.session.currentPerson];
+
+  if (NUM_MATCHING[req.session.confirmPerson] == null)
+    NUM_MATCHING[req.session.confirmPerson] = 0;
+  else NUM_MATCHING[req.session.confirmPerson]++;
 
   res.sendStatus(200);
 });
@@ -404,70 +471,58 @@ async function getSpreadsheetData(spreadsheetId, currentData) {
   const client = await auth.getClient();
   const sheets = google.sheets({ version: "v4", auth: client });
 
-  // If the current data is unassigned, then assign and return
-
   try {
-    // Get metadata to fetch the sheet name dynamically
     const metadata = await sheets.spreadsheets.get({
       spreadsheetId,
     });
-
-    // Get the first sheet's title
     const sheetTitle = metadata.data.sheets[0].properties.title;
-
-    // Fetch all data from the sheet
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
       range: sheetTitle,
     });
 
     const rows = response.data.values;
-
     if (!rows || rows.length === 0) {
       console.log("No data found in the spreadsheet.");
       return [];
     }
 
-    // Map the rows into a JSON array
-    const [headerRow, ...dataRows] = rows; // Destructure header row and data rows
+    const [headerRow, ...dataRows] = rows;
     const jsonData = dataRows.map((row) => {
       return headerRow.reduce((acc, key, index) => {
-        acc[TransferKey[index]] = row[index] || null; // Assign value or null if missing
+        acc[TransferKey[index]] = row[index] || null;
         return acc;
       }, {});
     });
 
     CurrentData = jsonData;
-
-    // Insert the data into the database
     while (CurrentDataIndex < jsonData.length) {
+      const emailHash = hash(jsonData[CurrentDataIndex]["Email Address"]);
+      const imageDir = path.join("public", "images", emailHash);
+      
       const matchDataJson = await InsertTheData(
         jsonData[CurrentDataIndex]["Email Address"],
         jsonData[CurrentDataIndex]
       );
 
-      // Insert the data into the match
-      Match[hash(jsonData[CurrentDataIndex]["Email Address"])] = matchDataJson;
+      Match[emailHash] = matchDataJson;
 
-      // Download the image from the drive
       firstImagePath = await getDriveImage(
         jsonData[CurrentDataIndex]["First Image"],
-        `public/images/${hash(jsonData[CurrentDataIndex]["Email Address"])}`
+        imageDir
       );
 
       if (
         jsonData[CurrentDataIndex]["Second Image"] &&
-        jsonData[CurrentDataIndex]["Second Image"] != null &&
-        jsonData[CurrentDataIndex]["Second Image"] != ""
+        jsonData[CurrentDataIndex]["Second Image"] !== ""
       ) {
         secondImagePath = await getDriveImage(
           jsonData[CurrentDataIndex]["Second Image"],
-          `public/images/${hash(jsonData[CurrentDataIndex]["Email Address"])}`
+          imageDir
         );
       }
 
-      // Assign the data into the people
-      People[hash(jsonData[CurrentDataIndex]["Email Address"])] = {
+      People[emailHash] = {
         tagLength: {
           Personal: {
             Personality:
@@ -477,28 +532,24 @@ async function getSpreadsheetData(spreadsheetId, currentData) {
           },
           Matching: {
             Personality:
-              jsonData[CurrentDataIndex]["Personality (Male)"]?.split(",")
-                .length +
-              jsonData[CurrentDataIndex]["Personality (Female)"]?.split(",")
-                .length +
-              jsonData[CurrentDataIndex]["Personality (Other)"]?.split(",")
-                .length,
+              (jsonData[CurrentDataIndex]["Personality (Male)"]?.split(",")
+                .length || 0) +
+              (jsonData[CurrentDataIndex]["Personality (Female)"]?.split(",")
+                .length || 0) +
+              (jsonData[CurrentDataIndex]["Personality (Other)"]?.split(",")
+                .length || 0),
             Appearance:
-              jsonData[CurrentDataIndex]["Appearance (Male)"]?.split(",")
-                .length +
-              jsonData[CurrentDataIndex]["Appearance (Female)"]?.split(",")
-                .length +
-              jsonData[CurrentDataIndex]["Appearance (Other)"]?.split(",")
-                .length,
+              (jsonData[CurrentDataIndex]["Appearance (Male)"]?.split(",")
+                .length || 0) +
+              (jsonData[CurrentDataIndex]["Appearance (Female)"]?.split(",")
+                .length || 0) +
+              (jsonData[CurrentDataIndex]["Appearance (Other)"]?.split(",")
+                .length || 0),
           },
         },
         Contact: {
-          IG: jsonData[CurrentDataIndex]["IG"]
-            ? jsonData[CurrentDataIndex]["IG"]
-            : null,
+          IG: jsonData[CurrentDataIndex]["IG"] || null,
         },
-        Transgender:
-          jsonData[CurrentDataIndex]["Transgender"] == "ไม่" ? false : true,
         Name: {
           Nickname: jsonData[CurrentDataIndex]["Nickname"],
           RName: [
@@ -513,6 +564,13 @@ async function getSpreadsheetData(spreadsheetId, currentData) {
         Program: jsonData[CurrentDataIndex]["Program"],
         ImagePath: [firstImagePath, secondImagePath],
         MatchingMessage: jsonData[CurrentDataIndex]["MatchingMessage"],
+        SpecialTag: {
+          Transgender:
+            jsonData[CurrentDataIndex].Transgender !== "ไม่ใช่",
+          Smoker: jsonData[CurrentDataIndex].Smoker !== "ไม่ใช่",
+          Alcoholic: jsonData[CurrentDataIndex].Alcoholic !== "ไม่ใช่",
+        },
+        Hobbies: jsonData[CurrentDataIndex].Hobbies,
       };
       CurrentDataIndex++;
     }
@@ -520,10 +578,8 @@ async function getSpreadsheetData(spreadsheetId, currentData) {
     console.error("Error fetching data:", error);
     return null;
   }
-
   console.log("Finished fetching data");
 }
-
 // > Building the tag from the current data person
 async function InsertTheData(email, personData) {
   // Convert the data into the given format
@@ -652,7 +708,7 @@ async function getDriveImage(fileUrl, targetDir) {
       });
     }
 
-    return fileName;
+    return filePath.split("\\")[2] + "/" + fileName;
   } catch (error) {
     console.error("Error processing image:", error);
     return null;
@@ -667,8 +723,7 @@ async function RandomPeopleSet(email) {
   // Fetch dynamic personData based on hashed email
   const personData = Match[hash(email)];
   const numberOfPeople = 9;
-
-  console.log("Your Data:", personData);
+  const maxPeopleLimit = 25;
 
   // Determine which key in `MatchingTag` contains a non-null value
   const matchingKey = Object.keys(personData.MatchingTag).find(
@@ -683,10 +738,8 @@ async function RandomPeopleSet(email) {
   const matchingTags = personData.MatchingTag[matchingKey];
 
   // Fetch all people and calculate matching percentages
-  const allPeople = Object.keys(Match).map((key) => {
+  let allPeople = Object.keys(Match).map((key) => {
     const otherPerson = Match[key];
-
-    console.log(otherPerson);
 
     // Skip comparison with yourself
     if (
@@ -711,18 +764,33 @@ async function RandomPeopleSet(email) {
     // Calculate total matches and percentage
     const totalMatches = matchingPersonality + matchingAppearance;
     const totalTags =
-      otherPersonalTag.Personality.length + otherPersonalTag.Appearance.length;
+    matchingTags.Personality.length + matchingTags.Appearance.length;
     const matchPercentage = (totalMatches / totalTags) * 100;
 
     return { header: key, matchPercentage };
   });
 
-  // Remove null values (from skipping yourself) and sort by match percentage
-  const filteredPeople = allPeople
-    .filter(Boolean)
-    .sort((a, b) => b.matchPercentage - a.matchPercentage);
+  // Remove null values
+  let filteredPeople = allPeople.filter(Boolean);
 
-  // Randomly select from the highest matches
+  // Sort by match percentage
+  filteredPeople.sort((a, b) => b.matchPercentage - a.matchPercentage);
+
+  // Limit `filteredPeople` to at most 27 people
+  if (filteredPeople.length > maxPeopleLimit) {
+    filteredPeople = filteredPeople.slice(0, maxPeopleLimit);
+  }
+
+  // Fisher-Yates Shuffle
+  for (let i = filteredPeople.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [filteredPeople[i], filteredPeople[j]] = [
+      filteredPeople[j],
+      filteredPeople[i],
+    ];
+  }
+
+  // Select top `numberOfPeople` after shuffle
   const selectedPeople = filteredPeople
     .slice(0, numberOfPeople)
     .map((p) => p.header);

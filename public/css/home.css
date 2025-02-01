@@ -10,6 +10,7 @@ body {
   margin: 0;
   padding: 0;
   height: 100vh;
+  width: 100vw;
   font-size: 3vw;
   background: linear-gradient(to bottom, #fa9eba, #f8c5c3, #b6ecfd);
   overflow: hidden;
@@ -210,6 +211,40 @@ body {
   right: 2vw;
 }
 
+#topIndicator{
+  font-family: "IBM Plex Sans Thai Looped", serif !important;
+  position: fixed;
+  top: 2vh;
+  width: 100%;
+  height: 5vh;
+  font-size: 5vw;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  z-index: 100;
+  transition: opacity 0.5s ease-in-out;
+  z-index: 1;
+}
+
+#bottomIndicator{
+  font-family: "IBM Plex Sans Thai Looped", serif !important;
+  position: fixed;
+  bottom: 2vh;
+  width: 100%;
+  height: 5vh;
+  font-size: 5vw;
+  color: #ffffff;
+  display: flex;
+  opacity: 0;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  transition: opacity 0.5s ease-in-out;
+  z-index: 1;
+}
+
 /* Card styling */
 .Nickname {
   display: flex;
@@ -224,7 +259,9 @@ body {
 .Age,
 .Height,
 .Program,
-.Description {
+.Description,
+.Hobbies,
+.HobbiesHeader {
   display: flex;
   margin-left: 20px;
   font-size: 3.75vw;
@@ -232,8 +269,10 @@ body {
   width: calc(100% - 40px);
 }
 
-.Description {
+.Description,
+.Hobbies {
   height: 50%;
+  color: #000;
   overflow-wrap: break-word; /* Ensures long words break onto the next line */
   word-break: break-word; /* Handles edge cases with very long unbreakable text */
   white-space: normal; /* Allows wrapping of text */
@@ -241,6 +280,30 @@ body {
   text-overflow: ellipsis; /* Adds "..." for overflowing text */
   display: -webkit-box; /* Enables multi-line ellipsis */
   -webkit-box-orient: vertical;
+}
+
+.SpecialTag {
+  position: absolute;
+  width: 100%;
+  opacity: 0;
+  bottom: 1vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 1s ease-in-out;
+}
+
+.specialTag {
+  height: 3vh;
+  display: flex;
+  font-size: 2vh;
+  align-items: center;
+  justify-content: center;
+  background-color: #4d677a;
+  width: 25%;
+  border-radius: 20px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 .CardImage {

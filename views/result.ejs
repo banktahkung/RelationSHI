@@ -5,6 +5,7 @@
     <link rel="stylesheet" type="text/css" href="/css/result.css" />
     <link rel="icon" href="/images/favicon.ico" type="image/x-icon" />
     <script src="/js/result.js"></script>
+    <script src="/js/particle.js"></script>
   </head>
 
   <body>
@@ -46,9 +47,43 @@
 
         <div class="ContactInformation">
           <div id="IG"></div>
-          <div id="MatchingMessage"></div>
+          <div id="MatchingMessage">
+            <div class="MessageHeader" style="font-weight: bolder">
+              ข้อความที่ฝากถึงกับเพื่อนใหม่
+            </div>
+            <div class="MessageContent"></div>
+          </div>
+        </div>
+
+        <div
+          class="popularityContainer"
+          style="margin-top: 2vh; width: 100%; height: 10vw"
+        >
+          <div
+            class="popularity"
+            id="popularity"
+            style="
+              background-color: cadetblue;
+              width: 80%;
+              height: 10vw;
+              border-radius: 50px;
+              color: #fff;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              font-size: 4vw;
+            "
+          ></div>
         </div>
       </div>
     </div>
+
+    <div class="WarningContent" id="WarningContent">
+      <div class="WarningText">
+        โปรดหมุนจอเครื่องของท่านให้เป็นแนวตั้งเพื่อประสบการณ์ที่ดีกว่า
+      </div>
+    </div>
+
+    <canvas id="heartCanvas"></canvas>
   </body>
 </html>
