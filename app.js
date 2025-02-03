@@ -170,14 +170,30 @@ app.get("/home", async (req, res) => {
   // Get the data from the database
   const { data, error } = await supabase
     .from("UserInformation")
-    .select("randomPeople, randomIndex, popularity")
+    .select("randomPeople, randomIndex, popularity, MatchingTag, PersonalTag, Sex, Interested")
     .eq("Email", hash(req.session.email));
 
-  if (data !== null && data.length > 0) {
+  if (data !== null && data.length > 0 && data[0].randomPeople != null) {
     req.session.personSet = data[0].randomPeople;
     req.session.currentPerson = data[0].randomIndex ? data[0].randomIndex : 0;
-    NUM_MATCHING[hash(req.session.email)] = data[0].popularity? data[0].popularity : 0;
+    NUM_MATCHING[hash(req.session.email)] = data[0].popularity
+      ? data[0].popularity
+      : 0;
   }
+
+  Match[hash(req.session.email)] = {
+    MatchingTag: data[0].MatchingTag,
+    PersonalTag: data[0].PersonalTag,
+    Sex: data[0].Sex,
+    Interested: data[0].Interested,
+  }
+  /*
+  
+  MatchingTag: MatchtagData,
+    PersonalTag: PersontagData,
+    Sex: personData["Sex"],
+    Interested: personData["Interested Sex"],
+    */
 
   if (req.session.confirmPerson) return res.redirect("/result");
 
@@ -196,7 +212,7 @@ app.get("/unexpected", (req, res) => {
 
 app.get("/person", async (req, res) => {
   // Prevent the user from accessing the data without logging in
-  if (!req.session.email || !req.session.valid) return res.sendStatus(400);  
+  if (!req.session.email || !req.session.valid) return res.sendStatus(400);
 
   if (!req.session.currentPerson) req.session.currentPerson = 0;
 
@@ -324,8 +340,6 @@ app.post("/login", async (req, res) => {
       return;
     }
 
-    console.log(data);
-
     // Check if the data is valid
     if (data.length == 0) return res.sendStatus(400);
   } catch (err) {
@@ -358,7 +372,11 @@ app.post("/register", async (req, res) => {
     if (element == firstThree) check = false;
   });
 
-  if (check && !(email == "sawitree@cbs.chula.ac.th" || email == "banktahkung@gmail.com")) return res.sendStatus(400);
+  if (
+    check &&
+    !(email == "sawitree@cbs.chula.ac.th" || email == "banktahkung@gmail.com")
+  )
+    return res.sendStatus(400);
 
   // Check if the email and password is valid
   try {
@@ -372,8 +390,6 @@ app.post("/register", async (req, res) => {
       throw error;
       return;
     }
-
-    console.log(data);
 
     // Check if the data is valid
     if (data.length > 0) return res.sendStatus(400);
@@ -436,8 +452,7 @@ app.post("/confirmation", async (req, res) => {
 
 // % Create a route
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-  console.log(`http://localhost:${port}`);
+  console.log("The server is running");
 });
 
 // % Hash function
@@ -499,7 +514,7 @@ async function getSpreadsheetData(spreadsheetId, currentData) {
     while (CurrentDataIndex < jsonData.length) {
       const emailHash = hash(jsonData[CurrentDataIndex]["Email Address"]);
       const imageDir = path.join("public", "images", emailHash);
-      
+
       const matchDataJson = await InsertTheData(
         jsonData[CurrentDataIndex]["Email Address"],
         jsonData[CurrentDataIndex]
@@ -565,8 +580,7 @@ async function getSpreadsheetData(spreadsheetId, currentData) {
         ImagePath: [firstImagePath, secondImagePath],
         MatchingMessage: jsonData[CurrentDataIndex]["MatchingMessage"],
         SpecialTag: {
-          Transgender:
-            jsonData[CurrentDataIndex].Transgender !== "ไม่ใช่",
+          Transgender: jsonData[CurrentDataIndex].Transgender !== "ไม่ใช่",
           Smoker: jsonData[CurrentDataIndex].Smoker !== "ไม่ใช่",
           Alcoholic: jsonData[CurrentDataIndex].Alcoholic !== "ไม่ใช่",
         },
@@ -593,12 +607,12 @@ async function InsertTheData(email, personData) {
   const interestSex = personData["Interested Sex"];
 
   // * Building the data to keep in the database
-  if (interestSex.toString().includes("Male")) {
+  if (interestSex.toString().includes("ชาย")) {
     MatchtagData.Male = {
       Personality: personData["Personality (Male)"]?.split(","),
       Appearance: personData["Appearance (Male)"]?.split(","),
     };
-  } else if (interestSex.toString().includes("Female")) {
+  } else if (interestSex.toString().includes("หญิง")) {
     MatchtagData.Female = {
       Personality: personData["Personality (Female)"]?.split(","),
       Appearance: personData["Appearance (Female)"]?.split(","),
@@ -622,6 +636,7 @@ async function InsertTheData(email, personData) {
       MatchingTag: MatchtagData,
       PersonalTag: PersontagData,
       Sex: personData["Sex"],
+      Interested: personData["Interested Sex"].split(" ")[0],
     },
   ]);
 
@@ -630,7 +645,7 @@ async function InsertTheData(email, personData) {
     MatchingTag: MatchtagData,
     PersonalTag: PersontagData,
     Sex: personData["Sex"],
-    Interested: personData["Interested Sex"],
+    Interested: personData["Interested Sex"].split(" ")[0],
   };
 }
 
@@ -645,15 +660,12 @@ async function getDriveImage(fileUrl, targetDir) {
       return null;
     }
 
-    console.log(`Fetching image with ID: ${fileId}`);
-
     const client = await auth.getClient();
     const drive = google.drive({ version: "v3", auth: client });
 
     // Ensure the target directory exists
     if (!fs.existsSync(targetDir)) {
       fs.mkdirSync(targetDir, { recursive: true });
-      console.log(`Created target directory: ${targetDir}`);
     }
 
     // Get file metadata (name and MIME type)
@@ -697,7 +709,6 @@ async function getDriveImage(fileUrl, targetDir) {
         const dest = fs.createWriteStream(filePath);
         response.data
           .on("end", () => {
-            console.log(`Image downloaded successfully to ${filePath}`);
             resolve();
           })
           .on("error", (err) => {
@@ -744,8 +755,9 @@ async function RandomPeopleSet(email) {
     // Skip comparison with yourself
     if (
       key === hash(email) ||
-      !personData.Interested.toString().includes(otherPerson.Sex) ||
-      !otherPerson.Interested.toString().includes(personData.Sex)
+      (!personData.Interested.toString().includes(otherPerson.Sex) ||
+      !otherPerson.Interested.toString().includes(personData.Sex)) &&
+      personData.Interested.toString() != "ไม่มีข้อจำกัด"
     )
       return null;
 
@@ -764,7 +776,7 @@ async function RandomPeopleSet(email) {
     // Calculate total matches and percentage
     const totalMatches = matchingPersonality + matchingAppearance;
     const totalTags =
-    matchingTags.Personality.length + matchingTags.Appearance.length;
+      matchingTags.Personality.length + matchingTags.Appearance.length;
     const matchPercentage = (totalMatches / totalTags) * 100;
 
     return { header: key, matchPercentage };
@@ -795,6 +807,5 @@ async function RandomPeopleSet(email) {
     .slice(0, numberOfPeople)
     .map((p) => p.header);
 
-  console.log("Selected Headers (Matched People):", selectedPeople);
   return selectedPeople;
 }
