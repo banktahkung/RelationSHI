@@ -410,7 +410,7 @@ async function CardBuilding() {
       if (index > 1) {
         // Style the image card
         card.innerHTML = `
-        <img src="/images/${
+        <img src="/${
           information.ImagePath[index - 2]
             ? information.ImagePath[index - 2]
             : "logo.png"

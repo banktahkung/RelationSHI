@@ -181,6 +181,8 @@ app.get("/home", async (req, res) => {
       : 0;
   }
 
+  console.log(data);
+
   Match[hash(req.session.email)] = {
     MatchingTag: data[0].MatchingTag,
     PersonalTag: data[0].PersonalTag,
@@ -242,8 +244,8 @@ app.get("/person", async (req, res) => {
       Name: People[selectedPerson].Name.RName,
       Description: People[selectedPerson].Description,
       ImagePath: [
-        People[selectedPerson].ImagePath[0],
-        People[selectedPerson].ImagePath[1],
+        path.join("images", selectedPerson.toString(), People[selectedPerson].ImagePath[0].split("/")[1]),
+        path.join("images", selectedPerson.toString(), People[selectedPerson].ImagePath[1].split("/")[1]),
       ],
       Gender: People[selectedPerson].Sex,
       Contact: {
@@ -340,6 +342,8 @@ app.post("/login", async (req, res) => {
       return;
     }
 
+    console.log(data);
+
     // Check if the data is valid
     if (data.length == 0) return res.sendStatus(400);
   } catch (err) {
@@ -390,6 +394,8 @@ app.post("/register", async (req, res) => {
       throw error;
       return;
     }
+
+    console.log(data);
 
     // Check if the data is valid
     if (data.length > 0) return res.sendStatus(400);
@@ -445,14 +451,25 @@ app.post("/confirmation", async (req, res) => {
 
   if (NUM_MATCHING[req.session.confirmPerson] == null)
     NUM_MATCHING[req.session.confirmPerson] = 0;
+
   else NUM_MATCHING[req.session.confirmPerson]++;
+
+  // Update the popularity
+  const { data, error } = await supabase
+    .from("UserInformation")
+    .update({
+      popularity: NUM_MATCHING[req.session.confirmPerson],
+      RelationSHI: req.session.confirmPerson,
+    })
+    .eq("Email", req.session.confirmPerson);
 
   res.sendStatus(200);
 });
 
 // % Create a route
 app.listen(port, () => {
-  console.log("The server is running");
+  console.log(`Server is running on port ${port}`);
+  console.log(`http://localhost:${port}`);
 });
 
 // % Hash function
@@ -660,12 +677,15 @@ async function getDriveImage(fileUrl, targetDir) {
       return null;
     }
 
+    console.log(`Fetching image with ID: ${fileId}`);
+
     const client = await auth.getClient();
     const drive = google.drive({ version: "v3", auth: client });
 
     // Ensure the target directory exists
     if (!fs.existsSync(targetDir)) {
       fs.mkdirSync(targetDir, { recursive: true });
+      console.log(`Created target directory: ${targetDir}`);
     }
 
     // Get file metadata (name and MIME type)
@@ -709,6 +729,7 @@ async function getDriveImage(fileUrl, targetDir) {
         const dest = fs.createWriteStream(filePath);
         response.data
           .on("end", () => {
+            console.log(`Image downloaded successfully to ${filePath}`);
             resolve();
           })
           .on("error", (err) => {
@@ -735,6 +756,8 @@ async function RandomPeopleSet(email) {
   const personData = Match[hash(email)];
   const numberOfPeople = 9;
   const maxPeopleLimit = 25;
+
+  console.log(Match);
 
   // Determine which key in `MatchingTag` contains a non-null value
   const matchingKey = Object.keys(personData.MatchingTag).find(
@@ -807,5 +830,6 @@ async function RandomPeopleSet(email) {
     .slice(0, numberOfPeople)
     .map((p) => p.header);
 
+  console.log("Selected Headers (Matched People):", selectedPeople);
   return selectedPeople;
 }
