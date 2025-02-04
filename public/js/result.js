@@ -45,8 +45,8 @@ window.onload = async function () {
   IG.textContent = "IG : " + Partner.IG;
 
   // Fix the ternary logic for image paths
-  userImage.src = Person.ImagePath ? "/images/" + Person.ImagePath : "/images/logo.png";
-  partnerImage.src = Partner.ImagePath ? "/images/" + Partner.ImagePath : "/images/logo.png";
+  userImage.src = Person.ImagePath ? Person.ImagePath : "/images/logo.png";
+  partnerImage.src = Partner.ImagePath ?  Partner.ImagePath : "/images/logo.png";
 
   // Matching message
   MatchingMessage.textContent = Partner.MatchingMessage;
