@@ -342,8 +342,6 @@ app.post("/login", async (req, res) => {
       return;
     }
 
-    console.log(data);
-
     // Check if the data is valid
     if (data.length == 0) return res.sendStatus(400);
   } catch (err) {
