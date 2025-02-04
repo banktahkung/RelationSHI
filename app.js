@@ -291,7 +291,7 @@ app.get("/resultPerson", async (req, res) => {
   // Build the person data object based on `CurrentData`
   const personData = {
     IG: People[selectedPerson]?.Contact.IG,
-    ImagePath: People[selectedPerson]?.ImagePath[0],
+    ImagePath: path.join("images", selectedPerson.toString(), People[selectedPerson].ImagePath[0].split("/")[1]),
     MatchingMessage: People[selectedPerson]?.MatchingMessage,
   };
 
@@ -308,7 +308,7 @@ app.get("/resultData", async (req, res) => {
 
   // Build the person data object based on `CurrentData`
   const personData = {
-    ImagePath: path.join("images", selectedPerson.toString(), People[selectedPerson].ImagePath[0].split("/")[1]),
+    ImagePath: path.join("images", hash(req.session.email).toString(), People[hash(req.session.email)].ImagePath[0].split("/")[1]),
   };
 
   // Send the person data to the client
