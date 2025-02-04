@@ -286,6 +286,8 @@ app.get("/resultPerson", async (req, res) => {
   // Get the current person based on the session index
   const selectedPerson = req.session.confirmPerson;
 
+  console.log(selectedPerson);
+
   // Build the person data object based on `CurrentData`
   const personData = {
     IG: People[selectedPerson].Contact.IG,
