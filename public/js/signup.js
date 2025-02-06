@@ -24,8 +24,10 @@ function Signup() {
     }).then((response) => {
       if (response.status === 200) {
         window.location.href = "/otp";
-      } else {
+      } else if(response.status === 400){
         alert("The email and/or password is invalid");
+      } else if(response.status === 401){
+        alert("Sorry for the inconvenience, but you didn't register your data  via google form with us. [Data not found]");
       }
     });
   } catch (err) {

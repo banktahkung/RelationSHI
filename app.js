@@ -12,6 +12,7 @@ const path = require("path");
 // Create an express app
 const app = express();
 
+
 //  Create a variable to store the current data
 let CurrentData = null;
 
@@ -262,8 +263,6 @@ app.get("/person", async (req, res) => {
       Hobbies: People[selectedPerson].Hobbies,
     };
 
-    req.session.currentPerson++;
-
     // Update the current Person
     const { data2, error2 } = await supabase
       .from("UserInformation")
@@ -273,7 +272,7 @@ app.get("/person", async (req, res) => {
       .eq("Email", hash(req.session.email));
 
     // Send the person data to the client
-    return res.send({ person: personData });
+    return res.send({ person: personData, lastPerson: req.session.currentPerson == req.session.personSet.length - 1 });
   }
 
   res.sendStatus(400);
@@ -290,9 +289,9 @@ app.get("/resultPerson", async (req, res) => {
 
   // Build the person data object based on `CurrentData`
   const personData = {
-    IG: People[selectedPerson]?.Contact.IG,
-    ImagePath: path.join("images", selectedPerson.toString(), People[selectedPerson].ImagePath[0].split("/")[1]),
-    MatchingMessage: People[selectedPerson]?.MatchingMessage,
+    IG: People[selectedPerson].Contact.IG,
+    ImagePath: People[selectedPerson].ImagePath[0],
+    MatchingMessage: People[selectedPerson].MatchingMessage,
   };
 
   // Send the person data to the client
@@ -308,7 +307,7 @@ app.get("/resultData", async (req, res) => {
 
   // Build the person data object based on `CurrentData`
   const personData = {
-    ImagePath: path.join("images", hash(req.session.email).toString(), People[hash(req.session.email)].ImagePath[0].split("/")[1]),
+    ImagePath: People[hash(req.session.email)].ImagePath[0],
   };
 
   // Send the person data to the client
@@ -343,6 +342,8 @@ app.post("/login", async (req, res) => {
       throw error;
       return;
     }
+
+    console.log(data);
 
     // Check if the data is valid
     if (data.length == 0) return res.sendStatus(400);
@@ -382,6 +383,8 @@ app.post("/register", async (req, res) => {
   )
     return res.sendStatus(400);
 
+  if(!People[hash(email)]) return res.sendStatus(401);
+
   // Check if the email and password is valid
   try {
     const { data, error } = await supabase
@@ -394,8 +397,6 @@ app.post("/register", async (req, res) => {
       throw error;
       return;
     }
-
-    console.log(data);
 
     // Check if the data is valid
     if (data.length > 0) return res.sendStatus(400);
@@ -465,6 +466,12 @@ app.post("/confirmation", async (req, res) => {
 
   res.sendStatus(200);
 });
+
+app.post("/decline", async (req, res) => {
+  req.session.currentPerson++;
+
+  res.sendStatus(200);
+})
 
 // % Create a route
 app.listen(port, () => {

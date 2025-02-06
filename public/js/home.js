@@ -1,6 +1,8 @@
 let currentBouncingCard = null;
 let currentSelectingCard = null;
 
+let a = false;
+
 const SpecialTag = {
   Transgender: "🏳️‍🌈",
   Smoker: "🚬",
@@ -158,9 +160,11 @@ function TransitionToNextPage() {
     setTimeout(() => {
       currentSelectingCard.style.opacity = 0;
       currentSelectingCard.style.zIndex = 0;
+      currentSelectingCard.style.left = "100vw";
+      currentSelectingCard.classList.add("AlreadySelected");
       currentSelectingCard = null;
       document.querySelectorAll(".Indicator").forEach((indicator) => {
-        indicator.style.opacity = 0.5;
+        indicator.style.opacity = 0.8;
 
         if (indicator.classList.contains("bottom")) {
           indicator.style.opacity = 1;
@@ -274,7 +278,7 @@ function CardUsage() {
       }
     });
 
-    card.addEventListener("touchend", () => {
+    card.addEventListener("touchend", async () => {
       if (!AlreadySelect) {
         if (Math.abs(moveX) > 120) {
           card.style.transition =
@@ -302,7 +306,10 @@ function CardUsage() {
           card.style.transition = "transform 1.2s ease-in-out";
 
           AlreadySelect = true;
-          goBack();
+          await Decline();
+
+          if (a) ending();
+          else goBack();
         } else {
           card.style.transition = "transform 0.3s ease, opacity 0.3s";
           card.style.transform = `translate(0, 0) rotate(0)`;
@@ -394,7 +401,11 @@ async function CardBuilding() {
         card.innerHTML = `
           <div class="info-card-2" style="height: 100%; position: relative; opacity: 1;">
             <div class="HobbiesHeader" style="width: 100%; text-align: center; display: flex;"> ความสนใจ (งานอดิเรก) : </div>
-            <div class="Hobbies">${information.Hobbies}</div>
+            <div class="Hobbies">${
+              information.Hobbies == null
+                ? "- ไม่มีงานอดิเรกที่ทำเป็นพิเศษ -"
+                : information.Hobbies
+            }</div>
           </div>
           <div class="SpecialTag" style="opacity: 1">
           </div>
@@ -523,6 +534,8 @@ function goBack() {
   prevent.style.display = "none";
 
   Cards.forEach((card) => {
+    if (card.classList.contains("AlreadySelected")) return;
+
     if (card.classList.contains("First"))
       card.style.left = "calc(50% - 31.5vw - 60px)";
     else if (card.classList.contains("Second"))
@@ -557,6 +570,9 @@ async function GetPerson() {
 
     // Await the JSON parsing
     const data = await response.json();
+
+    a = data.lastPerson;
+
     return data.person; // Return the data
   } catch (error) {
     console.error("Error fetching test person:", error);
@@ -570,7 +586,7 @@ function ending() {
 
   let drop = 0;
 
-  Cards.forEach((card, index) => {
+  Cards?.forEach((card, index) => {
     if (!card.classList.contains("accepted")) {
       setTimeout(() => {
         card.style.transition = "transform 1s ease-in-out";
@@ -595,12 +611,30 @@ function ending() {
   }, 400);
 
   setTimeout(() => {
-    PileOfCard.style.opacity = 0;
-    PileOfCard.style.zIndex = -1;
-    PileOfCard.style.transition = "opacity 1s ease-in-out";
+    if (PileOfCard) {
+      PileOfCard.style.opacity = 0;
+      PileOfCard.style.zIndex = -1;
+      PileOfCard.style.transition = "opacity 1s ease-in-out";
+    }
   }, 1000);
 
   setTimeout(() => {
     window.location.href = "/unexpected";
   }, 2000);
+}
+
+async function Decline() {
+  const destination = "/decline";
+
+  try {
+    const response = await fetch(destination, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ decline: true }),
+    });
+  } catch (error) {
+    console.error("Error declining", error);
+  }
 }
