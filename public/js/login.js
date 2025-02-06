@@ -37,9 +37,13 @@ function Login() {
       if (response.status === 200) {
 
         const body = document.getElementById("body");
+        const bottomIndicator = document.getElementById("bottomIndicator");
 
         body.style.transition = "top 1.5s ease-in-out";
         body.style.top = "-100vh";
+        
+        bottomIndicator.style.transition = "opacity 1.5s ease-in-out";
+        bottomIndicator.style.opacity = "0";
 
         setTimeout(() => {
           window.location.href = "/home";
