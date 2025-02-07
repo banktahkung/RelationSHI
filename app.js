@@ -531,7 +531,7 @@ async function getSpreadsheetData(spreadsheetId, currentData) {
     });
 
     CurrentData = jsonData;
-    while (CurrentDataIndex < jsonData.length) {
+    while (CurrentDataIndex < jsonData.length - 1) {
       const emailHash = hash(jsonData[CurrentDataIndex]["Email Address"]);
       const imageDir = path.join("public", "images", emailHash);
 
