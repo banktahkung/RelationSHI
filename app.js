@@ -12,7 +12,6 @@ const path = require("path");
 // Create an express app
 const app = express();
 
-
 //  Create a variable to store the current data
 let CurrentData = null;
 
@@ -83,19 +82,6 @@ let People = {};
 // List of the number of matching per person
 let NUM_MATCHING = {};
 
-// Sample data
-const samplePerson = {
-  Nickname: "ABC",
-  Name: ["DEF", "GHI"],
-  description: "Very good",
-  imagePath: ["/logo.png"],
-  gender: "male",
-  Contact: {
-    IG: "sample IG",
-    FB: "sample FB",
-  },
-};
-
 // Storage for keeping the matching data
 let Match = {};
 
@@ -107,9 +93,6 @@ app.use(bodyParser.json());
 
 // Set the port
 const port = process.env.PORT || 4000;
-
-const emailEx = "bank";
-const passwordEx = "bank";
 
 // Create a supabase client
 const supabase = createClient(
