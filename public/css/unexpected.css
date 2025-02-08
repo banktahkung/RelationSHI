@@ -74,7 +74,7 @@ body {
 
 .Content,
 .advice,
-.ThankyouText {
+.PopularityText {
   width: 80%;
   height: 6.25vh;
   border-radius: 30px;
@@ -93,7 +93,7 @@ body {
   color: #000;
 }
 
-.ThankyouText{
+.PopularityText{
     background-color: #f15267;
     height: 3vh;
     color: #fff;
