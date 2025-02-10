@@ -4,12 +4,9 @@ function resendOTP() {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      email: document.getElementById("email").value,
-    }),
   }).then((res) => {
     if (res.status === 200) {
-      alert("OTP sent successfully");
+      alert("OTP resent successfully");
     } else {
       alert("Failed to send OTP");
     }

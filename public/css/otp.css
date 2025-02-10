@@ -32,12 +32,13 @@
   position: relative;
   display: flex;
   justify-content: center;
-  height: 70vh;
+  height: 40vh;
 }
 
 .OTP {
   position: relative;
-  width: 70vw;
+  width: 75vw;
+  height:40vh;
 }
 
 .OTPInput {
@@ -46,9 +47,9 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 100px;
+  height: 20px;
   font-size: 6vw;
-  margin-top: 40px;
+  margin-top: 8vw;
 }
 
 .Indicator {
@@ -57,8 +58,8 @@
   justify-content: center;
   color: #fff;
   border-radius: 50%;
-  height: 100%;
-  width: 135px;
+  height: 10vw;
+  width: 10vw;
 }
 
 .Indicator.OTP {
@@ -66,16 +67,16 @@
 }
 
 input {
-  margin-left: 20px;
+  margin-left: 10px;
 }
 
 #otp {
-  width: 100%;
-  height: 100%;
+  width: calc(50% + 20px);
+  height: 10vw;
   border: none;
   font-size: 3.5vw;
   border-radius: 100px;
-  padding: 0px 30px 0px 30px;
+  padding: 0px 20px 0px 20px;
 }
 
 #otp {
@@ -92,7 +93,7 @@ input {
   margin-top: 10vh;
   position: relative;
   width: 100%;
-  height: 100px;
+  height: 50px;
   display: flex;
   align-content: center;
   justify-content: center;
@@ -104,9 +105,10 @@ input {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40%;
+  width: 50%;
   font-size: 3.5vw;
-  height: 100px;
+  height: 10vw;
+  padding: 0px 20px 0px 20px;
   color: #fff;
   border-radius: 100px;
   cursor: pointer;

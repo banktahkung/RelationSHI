@@ -82,6 +82,7 @@ let People = {};
 // List of the number of matching per person
 let NUM_MATCHING = {};
 
+
 // Storage for keeping the matching data
 let Match = {};
 
@@ -154,7 +155,9 @@ app.get("/home", async (req, res) => {
   // Get the data from the database
   const { data, error } = await supabase
     .from("UserInformation")
-    .select("randomPeople, randomIndex, popularity, MatchingTag, PersonalTag, Sex, Interested")
+    .select(
+      "randomPeople, randomIndex, popularity, MatchingTag, PersonalTag, Sex, Interested"
+    )
     .eq("Email", hash(req.session.email));
 
   if (data !== null && data.length > 0 && data[0].randomPeople != null) {
@@ -172,7 +175,7 @@ app.get("/home", async (req, res) => {
     PersonalTag: data[0].PersonalTag,
     Sex: data[0].Sex,
     Interested: data[0].Interested,
-  }
+  };
   /*
   
   MatchingTag: MatchtagData,
@@ -228,8 +231,16 @@ app.get("/person", async (req, res) => {
       Name: People[selectedPerson].Name.RName,
       Description: People[selectedPerson].Description,
       ImagePath: [
-        path.join("images", selectedPerson.toString(), People[selectedPerson].ImagePath[0].split("/")[1]),
-        path.join("images", selectedPerson.toString(), People[selectedPerson].ImagePath[1].split("/")[1]),
+        path.join(
+          "images",
+          selectedPerson.toString(),
+          People[selectedPerson].ImagePath[0].split("/")[1]
+        ),
+        path.join(
+          "images",
+          selectedPerson.toString(),
+          People[selectedPerson].ImagePath[1].split("/")[1]
+        ),
       ],
       Gender: People[selectedPerson].Sex,
       Contact: {
@@ -255,7 +266,10 @@ app.get("/person", async (req, res) => {
       .eq("Email", hash(req.session.email));
 
     // Send the person data to the client
-    return res.send({ person: personData, lastPerson: req.session.currentPerson == req.session.personSet.length - 1 });
+    return res.send({
+      person: personData,
+      lastPerson: req.session.currentPerson == req.session.personSet.length - 1,
+    });
   }
 
   res.sendStatus(400);
@@ -285,6 +299,9 @@ app.get("/resultData", async (req, res) => {
   // Prevent the user from accessing the data without logging in
   if (!req.session.email || !req.session.valid) return res.sendStatus(400);
 
+  // Get the current person based on the session index
+  const selectedPerson = req.session.confirmPerson;
+
   // Build the person data object based on `CurrentData`
   const personData = {
     ImagePath: People[hash(req.session.email)].ImagePath[0],
@@ -295,6 +312,17 @@ app.get("/resultData", async (req, res) => {
 });
 
 app.get("/popularity", async (req, res) => {
+  if (!NUM_MATCHING[hash(req.session.email)]) {
+    const { data, error } = await supabase
+      .from("UserInformation")
+      .select("popularity")
+      .eq("Email", hash(req.session.email));
+
+    NUM_MATCHING[hash(req.session.email)] = data[0].popularity
+      ? data[0].popularity
+      : 1;
+  }
+
   res.send({ pop: NUM_MATCHING[hash(req.session.email)] });
 });
 
@@ -363,7 +391,7 @@ app.post("/register", async (req, res) => {
   )
     return res.sendStatus(400);
 
-  if(!People[hash(email)]) return res.sendStatus(401);
+  if (!People[hash(email)]) return res.sendStatus(401);
 
   // Check if the email and password is valid
   try {
@@ -420,19 +448,26 @@ app.post("/OTP", async (req, res) => {
 
 // * Resend OTP
 app.post("/resendOTP", (req, res) => {
-  sendOTP(req.session.email);
+  sendOTP(req.session.email, req.session.OTP);
   return res.sendStatus(200);
 });
 
 // * Confirmation
 app.post("/confirmation", async (req, res) => {
+  req.session.currentPerson--;
 
   req.session.confirmPerson = req.session.personSet[req.session.currentPerson];
 
-  if (NUM_MATCHING[req.session.confirmPerson] == null)
-    NUM_MATCHING[req.session.confirmPerson] = 0;
+  if (NUM_MATCHING[req.session.confirmPerson] == null) {
+    const { data, error } = await supabase
+      .from("UserInformation")
+      .select("popularity")
+      .eq("Email", req.session.confirmPerson);
 
-  else NUM_MATCHING[req.session.confirmPerson]++;
+    NUM_MATCHING[req.session.confirmPerson] = data[0].popularity
+      ? data[0].popularity
+      : 1;
+  } else NUM_MATCHING[req.session.confirmPerson]++;
 
   // Update the popularity
   const { data, error } = await supabase
@@ -450,7 +485,7 @@ app.post("/decline", async (req, res) => {
   req.session.currentPerson++;
 
   res.sendStatus(200);
-})
+});
 
 // % Create a route
 app.listen(port, () => {
@@ -764,9 +799,9 @@ async function RandomPeopleSet(email) {
     // Skip comparison with yourself
     if (
       key === hash(email) ||
-      (!personData.Interested.toString().includes(otherPerson.Sex) ||
-      !otherPerson.Interested.toString().includes(personData.Sex)) &&
-      personData.Interested.toString() != "ไม่มีข้อจำกัด"
+      ((!personData.Interested.toString().includes(otherPerson.Sex) ||
+        !otherPerson.Interested.toString().includes(personData.Sex)) &&
+        personData.Interested.toString() != "ไม่มีข้อจำกัด")
     )
       return null;
 

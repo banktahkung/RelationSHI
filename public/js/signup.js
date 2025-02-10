@@ -9,9 +9,9 @@ function Signup() {
   }
 
   // Check if the email is academic
-  /*if (email.includes("26@student.chula.ac.th") === false) {
+  if (email.includes("26@student.chula.ac.th") === false) {
     alert("Please use the academic email");
-  }*/
+  }
 
   // Fetch the data to the server
   try {
