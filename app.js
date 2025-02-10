@@ -82,7 +82,6 @@ let People = {};
 // List of the number of matching per person
 let NUM_MATCHING = {};
 
-
 // Storage for keeping the matching data
 let Match = {};
 
@@ -282,12 +281,14 @@ app.get("/resultPerson", async (req, res) => {
   // Get the current person based on the session index
   const selectedPerson = req.session.confirmPerson;
 
-  console.log(selectedPerson);
-
   // Build the person data object based on `CurrentData`
   const personData = {
     IG: People[selectedPerson].Contact.IG,
-    ImagePath: People[selectedPerson].ImagePath[0],
+    ImagePath: path.join(
+      "image",
+      selectedPerson.toString(),
+      People[selectedPerson].ImagePath[0].split("/")[1]
+    ),
     MatchingMessage: People[selectedPerson].MatchingMessage,
   };
 
@@ -299,12 +300,13 @@ app.get("/resultData", async (req, res) => {
   // Prevent the user from accessing the data without logging in
   if (!req.session.email || !req.session.valid) return res.sendStatus(400);
 
-  // Get the current person based on the session index
-  const selectedPerson = req.session.confirmPerson;
-
   // Build the person data object based on `CurrentData`
   const personData = {
-    ImagePath: People[hash(req.session.email)].ImagePath[0],
+    ImagePath: path.join(
+      "image",
+      hash(req.session.email),
+      People[hash(req.session.email)].ImagePath[0].split("/")[1]
+    ),
   };
 
   // Send the person data to the client
