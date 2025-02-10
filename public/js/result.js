@@ -34,9 +34,6 @@ window.onload = async function () {
   const Person = await GetPerson();
   const Partner = await GetPartner();
 
-  console.log(Person.ImagePath);
-  console.log(Partner);
-
   const IG = document.getElementById("IG");
   const userImage = document.getElementById("userImage");
   const partnerImage = document.getElementById("partnerImage");
@@ -94,9 +91,6 @@ async function GetPopularity() {
 
     // Await the JSON parsing
     const data = await response.json();
-
-    console.log(data);
-
 
     return data.pop; // Return the data
   } catch (error) {

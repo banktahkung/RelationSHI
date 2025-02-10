@@ -443,10 +443,6 @@ async function Confirmation() {
       },
       body: JSON.stringify({ confirmation: true }),
     });
-
-    if (response.status === 200) {
-      console.log("Saved");
-    }
   } catch (error) {
     console.error("Error saving", error);
   }
