@@ -300,6 +300,12 @@ app.get("/resultData", async (req, res) => {
   // Prevent the user from accessing the data without logging in
   if (!req.session.email || !req.session.valid) return res.sendStatus(400);
 
+  console.log(path.join(
+    "image",
+    hash(req.session.email),
+    People[hash(req.session.email)].ImagePath[0].split("/")[1]
+  ))
+
   // Build the person data object based on `CurrentData`
   const personData = {
     ImagePath: path.join(
@@ -456,8 +462,6 @@ app.post("/resendOTP", (req, res) => {
 
 // * Confirmation
 app.post("/confirmation", async (req, res) => {
-  req.session.currentPerson--;
-
   req.session.confirmPerson = req.session.personSet[req.session.currentPerson];
 
   if (NUM_MATCHING[req.session.confirmPerson] == null) {
@@ -478,7 +482,7 @@ app.post("/confirmation", async (req, res) => {
       popularity: NUM_MATCHING[req.session.confirmPerson],
       RelationSHI: req.session.confirmPerson,
     })
-    .eq("Email", req.session.confirmPerson);
+    .eq("Email", hash(req.session.email));
 
   res.sendStatus(200);
 });
@@ -521,7 +525,6 @@ function sendOTP(email, OTP) {
 getSpreadsheetData(process.env.SPREADSHEET_ID, CurrentData);
 
 // Get the data from the Google Sheet dynamically (all current data)
-// ! Fix later
 async function getSpreadsheetData(spreadsheetId, currentData) {
   const client = await auth.getClient();
   const sheets = google.sheets({ version: "v4", auth: client });
