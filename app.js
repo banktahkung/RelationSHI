@@ -167,8 +167,6 @@ app.get("/home", async (req, res) => {
       : 0;
   }
 
-  console.log(data);
-
   Match[hash(req.session.email)] = {
     MatchingTag: data[0].MatchingTag,
     PersonalTag: data[0].PersonalTag,
@@ -285,7 +283,7 @@ app.get("/resultPerson", async (req, res) => {
   const personData = {
     IG: People[selectedPerson].Contact.IG,
     ImagePath: path.join(
-      "image",
+      "images",
       selectedPerson.toString(),
       People[selectedPerson].ImagePath[0].split("/")[1]
     ),
@@ -300,16 +298,10 @@ app.get("/resultData", async (req, res) => {
   // Prevent the user from accessing the data without logging in
   if (!req.session.email || !req.session.valid) return res.sendStatus(400);
 
-  console.log(path.join(
-    "image",
-    hash(req.session.email),
-    People[hash(req.session.email)].ImagePath[0].split("/")[1]
-  ))
-
   // Build the person data object based on `CurrentData`
   const personData = {
     ImagePath: path.join(
-      "image",
+      "images",
       hash(req.session.email),
       People[hash(req.session.email)].ImagePath[0].split("/")[1]
     ),
@@ -358,8 +350,6 @@ app.post("/login", async (req, res) => {
       throw error;
       return;
     }
-
-    console.log(data);
 
     // Check if the data is valid
     if (data.length == 0) return res.sendStatus(400);
@@ -495,8 +485,7 @@ app.post("/decline", async (req, res) => {
 
 // % Create a route
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-  console.log(`http://localhost:${port}`);
+  console.log("Service is online");
 });
 
 // % Hash function
@@ -703,15 +692,12 @@ async function getDriveImage(fileUrl, targetDir) {
       return null;
     }
 
-    console.log(`Fetching image with ID: ${fileId}`);
-
     const client = await auth.getClient();
     const drive = google.drive({ version: "v3", auth: client });
 
     // Ensure the target directory exists
     if (!fs.existsSync(targetDir)) {
       fs.mkdirSync(targetDir, { recursive: true });
-      console.log(`Created target directory: ${targetDir}`);
     }
 
     // Get file metadata (name and MIME type)
@@ -755,7 +741,6 @@ async function getDriveImage(fileUrl, targetDir) {
         const dest = fs.createWriteStream(filePath);
         response.data
           .on("end", () => {
-            console.log(`Image downloaded successfully to ${filePath}`);
             resolve();
           })
           .on("error", (err) => {
@@ -782,8 +767,6 @@ async function RandomPeopleSet(email) {
   const personData = Match[hash(email)];
   const numberOfPeople = 9;
   const maxPeopleLimit = 25;
-
-  console.log(Match);
 
   // Determine which key in `MatchingTag` contains a non-null value
   const matchingKey = Object.keys(personData.MatchingTag).find(
@@ -855,7 +838,6 @@ async function RandomPeopleSet(email) {
   const selectedPeople = filteredPeople
     .slice(0, numberOfPeople)
     .map((p) => p.header);
-
-  console.log("Selected Headers (Matched People):", selectedPeople);
+    
   return selectedPeople;
 }
