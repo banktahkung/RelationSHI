@@ -155,7 +155,7 @@ app.get("/home", async (req, res) => {
   const { data, error } = await supabase
     .from("UserInformation")
     .select(
-      "randomPeople, randomIndex, popularity, MatchingTag, PersonalTag, Sex, Interested"
+      "randomPeople, randomIndex, popularity, MatchingTag, PersonalTag, Sex, Interested, RelationSHI"
     )
     .eq("Email", hash(req.session.email));
 
@@ -165,6 +165,8 @@ app.get("/home", async (req, res) => {
     NUM_MATCHING[hash(req.session.email)] = data[0].popularity
       ? data[0].popularity
       : 0;
+
+    req.session.confirmPerson = data[0].RelationSHI ? data[0].RelationSHI : null;
   }
 
   Match[hash(req.session.email)] = {
@@ -173,13 +175,6 @@ app.get("/home", async (req, res) => {
     Sex: data[0].Sex,
     Interested: data[0].Interested,
   };
-  /*
-  
-  MatchingTag: MatchtagData,
-    PersonalTag: PersontagData,
-    Sex: personData["Sex"],
-    Interested: personData["Interested Sex"],
-    */
 
   if (req.session.confirmPerson) return res.redirect("/result");
 
@@ -838,6 +833,6 @@ async function RandomPeopleSet(email) {
   const selectedPeople = filteredPeople
     .slice(0, numberOfPeople)
     .map((p) => p.header);
-    
+
   return selectedPeople;
 }
