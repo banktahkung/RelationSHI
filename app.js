@@ -30,7 +30,7 @@ const auth = new google.auth.GoogleAuth({
 // Create a middleware
 app.use(
   session({
-    secret: process.env.WEBSITE_SECRET,
+    secret: process.env.WEBSITE_SECRET ? process.env.WEBSITE_SECRET : "hello",
   })
 );
 
@@ -73,9 +73,6 @@ const TransferKey = {
   33: "Confirmation",
 };
 
-//
-let CurrentDataIndex = 0;
-
 // List of the person
 let People = {};
 
@@ -113,13 +110,14 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+
 // Retrive the data from the Google Sheet every minute
 setInterval(async () => {
   CurrentData = await getSpreadsheetData(
     process.env.SPREADSHEET_ID,
     CurrentData
   );
-}, 60000);
+}, 900000);
 
 // GET method route
 app.get("/", (req, res) => {
@@ -166,10 +164,12 @@ app.get("/home", async (req, res) => {
       ? data[0].popularity
       : 0;
 
-    req.session.confirmPerson = data[0].RelationSHI ? data[0].RelationSHI : null;
+    req.session.confirmPerson = data[0].RelationSHI
+      ? data[0].RelationSHI
+      : null;
   }
 
-  Match[hash(req.session.email)] = {
+  Match[hash(req.session.email)] = await {
     MatchingTag: data[0].MatchingTag,
     PersonalTag: data[0].PersonalTag,
     Sex: data[0].Sex,
@@ -218,7 +218,7 @@ app.get("/person", async (req, res) => {
 
   if (selectedPerson) {
     // Build the person data object based on `CurrentData`
-    const personData = {
+    const personData = await {
       Nickname: People[selectedPerson].Name.Nickname,
       Name: People[selectedPerson].Name.RName,
       Description: People[selectedPerson].Description,
@@ -275,7 +275,7 @@ app.get("/resultPerson", async (req, res) => {
   const selectedPerson = req.session.confirmPerson;
 
   // Build the person data object based on `CurrentData`
-  const personData = {
+  const personData = await {
     IG: People[selectedPerson].Contact.IG,
     ImagePath: path.join(
       "images",
@@ -294,7 +294,7 @@ app.get("/resultData", async (req, res) => {
   if (!req.session.email || !req.session.valid) return res.sendStatus(400);
 
   // Build the person data object based on `CurrentData`
-  const personData = {
+  const personData = await {
     ImagePath: path.join(
       "images",
       hash(req.session.email),
@@ -321,8 +321,7 @@ app.get("/popularity", async (req, res) => {
   res.send({ pop: NUM_MATCHING[hash(req.session.email)] });
 });
 
-// POST method route
-// ! Edit later
+// % POST method route
 app.post("/login", async (req, res) => {
   // Get the data from the request
   const bodydata = req.body;
@@ -538,8 +537,14 @@ async function getSpreadsheetData(spreadsheetId, currentData) {
     });
 
     CurrentData = jsonData;
-    while (CurrentDataIndex < jsonData.length - 1) {
-      const emailHash = hash(jsonData[CurrentDataIndex]["Email Address"]);
+
+    for (
+      let CurrentDataIndex = Object.keys(People).length;
+      CurrentDataIndex < jsonData.length;
+      CurrentDataIndex++
+    ) {
+
+      const emailHash = await hash(jsonData[CurrentDataIndex]["Email Address"]);
       const imageDir = path.join("public", "images", emailHash);
 
       const matchDataJson = await InsertTheData(
@@ -564,7 +569,7 @@ async function getSpreadsheetData(spreadsheetId, currentData) {
         );
       }
 
-      People[emailHash] = {
+      People[emailHash] = await {
         tagLength: {
           Personal: {
             Personality:
@@ -613,7 +618,6 @@ async function getSpreadsheetData(spreadsheetId, currentData) {
         },
         Hobbies: jsonData[CurrentDataIndex].Hobbies,
       };
-      CurrentDataIndex++;
     }
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -631,27 +635,27 @@ async function InsertTheData(email, personData) {
       Other: null,
     };
 
-  const interestSex = personData["Interested Sex"];
+  const interestSex = await personData["Interested Sex"];
 
   // * Building the data to keep in the database
   if (interestSex.toString().includes("ชาย")) {
-    MatchtagData.Male = {
+    MatchtagData.Male = await {
       Personality: personData["Personality (Male)"]?.split(","),
       Appearance: personData["Appearance (Male)"]?.split(","),
     };
   } else if (interestSex.toString().includes("หญิง")) {
-    MatchtagData.Female = {
+    MatchtagData.Female = await {
       Personality: personData["Personality (Female)"]?.split(","),
       Appearance: personData["Appearance (Female)"]?.split(","),
     };
   } else {
-    MatchtagData.Other = {
+    MatchtagData.Other = await {
       Personality: personData["Personality (Other)"]?.split(","),
       Appearance: personData["Appearance (Other)"]?.split(","),
     };
   }
 
-  PersontagData = {
+  PersontagData = await {
     Personality: personData["Personality"].split(","),
     Appearance: personData["Appearance"].split(","),
   };

@@ -55,8 +55,8 @@ body {
   align-items: center;
   margin-top: 5vh;
   border-radius: 50%;
-  width: 45vw;
-  height: 45vw;
+  width: 35vw;
+  height: 35vw;
   background-color: #ff6687;
 }
 
@@ -70,7 +70,7 @@ body {
 
 .HeartImage {
   position: absolute;
-  margin-top: 15vh;
+  margin-top: 15vw;
 }
 
 /* Contact */
@@ -83,7 +83,7 @@ body {
 }
 
 .ContactHeader {
-  margin-top: 10vh;
+  margin-top: 20vh;
   font-size: 5vw;
   margin-bottom: 2vh; /* Space between header and information */
 }
@@ -151,5 +151,5 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 35vh; /* Full viewport height */ 
+  height: 35vh;
 }
