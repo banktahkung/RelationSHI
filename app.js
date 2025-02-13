@@ -121,14 +121,10 @@ setInterval(async () => {
 // GET method route
 app.get("/", (req, res) => {
   req.session = null;
-
-  res.redirect("/unconvenient");
 });
 
 app.get("/login", (req, res) => {
   req.session = null;
-
-  return res.redirect("/unconvenient");
 
   res.render("login");
 });
@@ -147,8 +143,6 @@ app.get("/OTP", (req, res) => {
 
 app.get("/home", async (req, res) => {
   if (!req.session.valid) return res.redirect("/");
-
-  return res.redirect("/");
 
   req.session.personSet = {};
 
@@ -186,8 +180,6 @@ app.get("/home", async (req, res) => {
 
 app.get("/result", (req, res) => {
   if (!req.session.valid) return res.redirect("/");
-
-  return res.redirect("/");
 
   res.render("result");
 });
@@ -352,8 +344,6 @@ app.post("/login", async (req, res) => {
 
   if (email == process.env.EMAIL) return res.sendStatus(400);
 
-  return res.sendStatus(400);
-
   // Fetch the data from the server
   try {
     // Check whether the data is valid
@@ -403,12 +393,8 @@ app.post("/register", async (req, res) => {
 
   let hashEmail = await hash(email);
 
-  console.log(hashEmail);
-
   if (!People[hashEmail]) return res.sendStatus(401);
   if (check) return res.sendStatus(400);
-
-  return res.sendStatus(400);
 
   // Check if the email and password is valid
   try {
@@ -444,7 +430,7 @@ app.post("/register", async (req, res) => {
 
 // * OTP
 app.post("/OTP", async (req, res) => {
-  const OTP = req.body.OTP;
+  const OTP = req.body.OTP.toString().trim();
 
   if (parseInt(req.session.OTP) == parseInt(OTP)) {
     // Insert the data into the database
