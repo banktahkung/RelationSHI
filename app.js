@@ -186,9 +186,9 @@ app.get("/result", (req, res) => {
   res.render("result");
 });
 
-app.get("/unconvenient", (req, res)=>{
-  res.render("unconvenient")
-})
+app.get("/unconvenient", (req, res) => {
+  res.render("unconvenient");
+});
 
 app.get("/unexpected", (req, res) => {
   if (!req.session.valid) return res.redirect("/");
@@ -285,17 +285,21 @@ app.get("/resultPerson", async (req, res) => {
   const selectedPerson = req.session.confirmPerson;
 
   // Build the person data object based on `CurrentData`
-  const personData = await {
-    IG: People[selectedPerson].Contact.IG,
-    ImagePath: People[selectedPerson].ImagePath[0]
-      ? path.join(
-          "images",
-          selectedPerson.toString(),
-          People[selectedPerson].ImagePath[0].split("/")[1]
-        )
-      : "/images/logo.png",
-    MatchingMessage: People[selectedPerson].MatchingMessage,
-  };
+  try {
+    const personData = await {
+      IG: People[selectedPerson].Contact.IG,
+      ImagePath: People[selectedPerson].ImagePath[0]
+        ? path.join(
+            "images",
+            selectedPerson.toString(),
+            People[selectedPerson].ImagePath[0].split("/")[1]
+          )
+        : "/images/logo.png",
+      MatchingMessage: People[selectedPerson].MatchingMessage,
+    };
+  } catch (e) {
+    return res.sendStatus(400);
+  }
 
   // Send the person data to the client
   res.send({ person: personData });
@@ -556,9 +560,13 @@ async function getSpreadsheetData(spreadsheetId, currentData) {
     for (; CurrentDataIndex < jsonData.length; CurrentDataIndex++) {
       console.log(CurrentDataIndex);
 
-      console.log(jsonData[CurrentDataIndex]["Email Address"].toString().trim())
+      console.log(
+        jsonData[CurrentDataIndex]["Email Address"].toString().trim()
+      );
 
-      const emailHash = await hash(jsonData[CurrentDataIndex]["Email Address"].toString().trim());
+      const emailHash = await hash(
+        jsonData[CurrentDataIndex]["Email Address"].toString().trim()
+      );
       const imageDir = path.join("public", "images", emailHash);
 
       const matchDataJson = await InsertTheData(
@@ -794,63 +802,67 @@ async function RandomPeopleSet(email) {
   const matchingTags = personData.MatchingTag[matchingKey];
 
   // Fetch all people and calculate matching percentages
-  let allPeople = Object.keys(Match).map((key) => {
-    const otherPerson = Match[key];
+  try {
+    let allPeople = Object.keys(Match).map((key) => {
+      const otherPerson = Match[key];
 
-    // Skip comparison with yourself
-    if (
-      key === hash(email) ||
-      ((!personData.Interested.toString().includes(otherPerson.Sex) ||
-        !otherPerson.Interested.toString().includes(personData.Sex)) &&
-        personData.Interested.toString() != "ไม่มีข้อจำกัด")
-    )
-      return null;
+      // Skip comparison with yourself
+      if (
+        key === hash(email) ||
+        ((!personData.Interested.toString().includes(otherPerson.Sex) ||
+          !otherPerson.Interested.toString().includes(personData.Sex)) &&
+          personData.Interested.toString() != "ไม่มีข้อจำกัด")
+      )
+        return null;
 
-    // Extract `PersonalTag` of the other person
-    const otherPersonalTag = otherPerson.PersonalTag;
+      // Extract `PersonalTag` of the other person
+      const otherPersonalTag = otherPerson.PersonalTag;
 
-    // Compare `yourself` (MatchingTag) with `other people's` PersonalTag
-    const matchingPersonality = matchingTags.Personality.filter((tag) =>
-      otherPersonalTag.Personality.includes(tag)
-    ).length;
+      // Compare `yourself` (MatchingTag) with `other people's` PersonalTag
+      const matchingPersonality = matchingTags.Personality.filter((tag) =>
+        otherPersonalTag.Personality.includes(tag)
+      ).length;
 
-    const matchingAppearance = matchingTags.Appearance.filter((tag) =>
-      otherPersonalTag.Appearance.includes(tag)
-    ).length;
+      const matchingAppearance = matchingTags.Appearance.filter((tag) =>
+        otherPersonalTag.Appearance.includes(tag)
+      ).length;
 
-    // Calculate total matches and percentage
-    const totalMatches = matchingPersonality + matchingAppearance;
-    const totalTags =
-      matchingTags.Personality.length + matchingTags.Appearance.length;
-    const matchPercentage = (totalMatches / totalTags) * 100;
+      // Calculate total matches and percentage
+      const totalMatches = matchingPersonality + matchingAppearance;
+      const totalTags =
+        matchingTags.Personality.length + matchingTags.Appearance.length;
+      const matchPercentage = (totalMatches / totalTags) * 100;
 
-    return { header: key, matchPercentage };
-  });
+      return { header: key, matchPercentage };
+    });
 
-  // Remove null values
-  let filteredPeople = allPeople.filter(Boolean);
+    // Remove null values
+    let filteredPeople = allPeople.filter(Boolean);
 
-  // Sort by match percentage
-  filteredPeople.sort((a, b) => b.matchPercentage - a.matchPercentage);
+    // Sort by match percentage
+    filteredPeople.sort((a, b) => b.matchPercentage - a.matchPercentage);
 
-  // Limit `filteredPeople` to at most 27 people
-  if (filteredPeople.length > maxPeopleLimit) {
-    filteredPeople = filteredPeople.slice(0, maxPeopleLimit);
+    // Limit `filteredPeople` to at most 27 people
+    if (filteredPeople.length > maxPeopleLimit) {
+      filteredPeople = filteredPeople.slice(0, maxPeopleLimit);
+    }
+
+    // Fisher-Yates Shuffle
+    for (let i = filteredPeople.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [filteredPeople[i], filteredPeople[j]] = [
+        filteredPeople[j],
+        filteredPeople[i],
+      ];
+    }
+
+    // Select top `numberOfPeople` after shuffle
+    const selectedPeople = filteredPeople
+      .slice(0, numberOfPeople)
+      .map((p) => p.header);
+
+    return selectedPeople;
+  } catch (e) {
+    console.log(`${email} error not match`);
   }
-
-  // Fisher-Yates Shuffle
-  for (let i = filteredPeople.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [filteredPeople[i], filteredPeople[j]] = [
-      filteredPeople[j],
-      filteredPeople[i],
-    ];
-  }
-
-  // Select top `numberOfPeople` after shuffle
-  const selectedPeople = filteredPeople
-    .slice(0, numberOfPeople)
-    .map((p) => p.header);
-
-  return selectedPeople;
 }

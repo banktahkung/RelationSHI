@@ -6,15 +6,19 @@ async function GetPartner() {
       method: "GET",
     });
 
-    // Await the JSON parsing
-    const data = await response.json();
+    if (response.status == 400) {
+      alert("The partner data is not existed. Please consider contact admin");
+    } else {
+      // Await the JSON parsing
+      const data = await response.json();
+    }
     return data.person; // Return the data
   } catch (error) {
     console.error("Error fetching test person:", error);
   }
 }
 
-async function GetPerson(){
+async function GetPerson() {
   const location = "/resultData";
 
   try {
@@ -43,7 +47,7 @@ window.onload = async function () {
 
   // Fix the ternary logic for image paths
   userImage.src = Person.ImagePath ? Person.ImagePath : "/images/logo.png";
-  partnerImage.src = Partner.ImagePath ?  Partner.ImagePath : "/images/logo.png";
+  partnerImage.src = Partner.ImagePath ? Partner.ImagePath : "/images/logo.png";
 
   // Matching message
   MatchingMessage.textContent = Partner.MatchingMessage;
@@ -60,7 +64,8 @@ document.addEventListener("DOMContentLoaded", async function () {
   const popularity = await GetPopularity();
   const PopularityContent = document.getElementById("popularity");
 
-  PopularityContent.textContent = " 🤝 ในขณะนี้มีคนอยากรู้จักคุณ : " + (popularity? popularity : 0);
+  PopularityContent.textContent =
+    " 🤝 ในขณะนี้มีคนอยากรู้จักคุณ : " + (popularity ? popularity : 0);
 
   // Function to check the orientation
   function checkOrientation() {
@@ -102,5 +107,6 @@ setInterval(async function () {
   const popularity = await GetPopularity();
   const PopularityContent = document.getElementById("popularity");
 
-  PopularityContent.textContent = " 🤝 ในขณะนี้มีคนอยากรู้จักคุณ : " + (popularity? popularity : 0);
-}, 60000)
+  PopularityContent.textContent =
+    " 🤝 ในขณะนี้มีคนอยากรู้จักคุณ : " + (popularity ? popularity : 0);
+}, 60000);
