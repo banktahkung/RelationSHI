@@ -224,16 +224,21 @@ app.get("/person", async (req, res) => {
       Name: People[selectedPerson].Name.RName,
       Description: People[selectedPerson].Description,
       ImagePath: [
-        path.join(
-          "images",
-          selectedPerson.toString(),
-          People[selectedPerson].ImagePath[0].split("/")[1]
-        ),
-        path.join(
-          "images",
-          selectedPerson.toString(),
-          People[selectedPerson].ImagePath[1].split("/")[1]
-        ),
+        People[selectedPerson].ImagePath[0]
+          ? path.join(
+              "images",
+              selectedPerson.toString(),
+              People[selectedPerson].ImagePath[0].split("/")[1]
+            )
+          : "/images/logo.png",
+
+        People[selectedPerson].ImagePath[1]
+          ? path.join(
+              "images",
+              selectedPerson.toString(),
+              People[selectedPerson].ImagePath[1].split("/")[1]
+            )
+          : "/images/logo.png",
       ],
       Gender: People[selectedPerson].Sex,
       Contact: {
@@ -278,11 +283,13 @@ app.get("/resultPerson", async (req, res) => {
   // Build the person data object based on `CurrentData`
   const personData = await {
     IG: People[selectedPerson].Contact.IG,
-    ImagePath: path.join(
-      "images",
-      selectedPerson.toString(),
-      People[selectedPerson].ImagePath[0].split("/")[1]
-    ),
+    ImagePath: People[selectedPerson].ImagePath[0]
+      ? path.join(
+          "images",
+          selectedPerson.toString(),
+          People[selectedPerson].ImagePath[0].split("/")[1]
+        )
+      : "/images/logo.png",
     MatchingMessage: People[selectedPerson].MatchingMessage,
   };
 
@@ -299,7 +306,8 @@ app.get("/resultData", async (req, res) => {
     ImagePath: path.join(
       "images",
       hash(req.session.email),
-      People[hash(req.session.email)].ImagePath[0].split("/")[1]
+      People[hash(req.session.email)].ImagePath[0] ? 
+      People[hash(req.session.email)].ImagePath[0].split("/")[1] : "/images/logo.png"
     ),
   };
 
@@ -544,7 +552,6 @@ async function getSpreadsheetData(spreadsheetId, currentData) {
     let CurrentDataIndex = Object.keys(People).length;
 
     for (; CurrentDataIndex < jsonData.length; CurrentDataIndex++) {
-      
       console.log(CurrentDataIndex);
 
       const emailHash = await hash(jsonData[CurrentDataIndex]["Email Address"]);
