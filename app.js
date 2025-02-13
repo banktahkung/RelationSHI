@@ -303,12 +303,13 @@ app.get("/resultData", async (req, res) => {
 
   // Build the person data object based on `CurrentData`
   const personData = await {
-    ImagePath: path.join(
-      "images",
-      hash(req.session.email),
-      People[hash(req.session.email)].ImagePath[0] ? 
-      People[hash(req.session.email)].ImagePath[0].split("/")[1] : "/images/logo.png"
-    ),
+    ImagePath: People[hash(req.session.email)].ImagePath[0]
+      ? path.join(
+          "images",
+          hash(req.session.email),
+          People[hash(req.session.email)].ImagePath[0].split("/")[1]
+        )
+      : "/images/logo.png",
   };
 
   // Send the person data to the client
