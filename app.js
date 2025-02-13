@@ -4,7 +4,6 @@ const session = require("cookie-session");
 const { createClient } = require("@supabase/supabase-js");
 const bodyParser = require("body-parser");
 const { sha256 } = require("js-sha256");
-const dotenv = require("dotenv").config();
 const nodemailer = require("nodemailer");
 const { google, checks_v1alpha } = require("googleapis");
 const fs = require("fs");
