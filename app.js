@@ -122,11 +122,13 @@ setInterval(async () => {
 app.get("/", (req, res) => {
   req.session = null;
 
-  res.redirect("/login");
+  res.redirect("/unconvenient");
 });
 
 app.get("/login", (req, res) => {
   req.session = null;
+
+  return res.redirect("/unconvenient");
 
   res.render("login");
 });
@@ -189,6 +191,10 @@ app.get("/result", (req, res) => {
 
   res.render("result");
 });
+
+app.get("/unconvenient", (req, res)=>{
+  res.render("unconvenient")
+})
 
 app.get("/unexpected", (req, res) => {
   if (!req.session.valid) return res.redirect("/");
@@ -401,6 +407,8 @@ app.post("/register", async (req, res) => {
 
   if (!People[hashEmail]) return res.sendStatus(401);
   if (check) return res.sendStatus(400);
+
+  return res.sendStatus(400);
 
   // Check if the email and password is valid
   try {
