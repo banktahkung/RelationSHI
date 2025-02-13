@@ -4,10 +4,12 @@ const session = require("cookie-session");
 const { createClient } = require("@supabase/supabase-js");
 const bodyParser = require("body-parser");
 const { sha256 } = require("js-sha256");
+const dotenv = require("dotenv").config();
 const nodemailer = require("nodemailer");
 const { google, checks_v1alpha } = require("googleapis");
 const fs = require("fs");
 const path = require("path");
+
 
 // Create an express app
 const app = express();
@@ -221,7 +223,7 @@ app.get("/person", async (req, res) => {
   // Get the current person based on the session index
   const selectedPerson = req.session.personSet[req.session.currentPerson];
 
-  if (selectedPerson) {
+  if (selectedPerson && People[selectedPerson]) {
     // Build the person data object based on `CurrentData`
     const personData = await {
       Nickname: People[selectedPerson].Name.Nickname,
@@ -273,6 +275,8 @@ app.get("/person", async (req, res) => {
       lastPerson: req.session.currentPerson == req.session.personSet.length - 1,
     });
   }
+
+  if(selectedPerson && !People[selectedPerson]) return res.sendStatus(401)
 
   res.sendStatus(400);
 });
@@ -348,6 +352,9 @@ app.post("/login", async (req, res) => {
   const email = bodydata.email.toString().trim();
   const password = bodydata.password.toString().trim();
 
+  
+  console.log(`Log in : \n${email} \n ${hash(email)}`);
+
   if (email == process.env.EMAIL) return res.sendStatus(400);
 
   // Fetch the data from the server
@@ -385,6 +392,8 @@ app.post("/register", async (req, res) => {
   const email = bodydata.email.toString().trim();
   const password = bodydata.password.toString().trim();
 
+  console(` Sign Up : \n Email : ${email} \n Hash : ${hash(email)} \n`);
+
   if (email == process.env.EMAIL) return res.sendStatus(400);
 
   const firstThree = email.substring(0, 3);
@@ -407,7 +416,7 @@ app.post("/register", async (req, res) => {
     const { data, error } = await supabase
       .from("UserData")
       .select("Email")
-      .eq("Email", hash(email));
+      .eq("Email", hashEmail);
 
     // Check if there is an error
     if (error) {
@@ -442,8 +451,8 @@ app.post("/OTP", async (req, res) => {
     // Insert the data into the database
     await supabase.from("UserData").insert([
       {
-        Email: hash(req.session.email),
-        Password: hash(req.session.password),
+        Email: hash(req.session.email.toString().trim()),
+        Password: hash(req.session.password.toString().trim()),
       },
     ]);
 
