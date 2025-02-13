@@ -391,7 +391,7 @@ app.post("/register", async (req, res) => {
   const email = bodydata.email.toString().trim();
   const password = bodydata.password.toString().trim();
 
-  console(` Sign Up : \n Email : ${email} \n Hash : ${hash(email)} \n`);
+  console.log(` Sign Up : \n Email : ${email} \n Hash : ${hash(email)} \n`);
 
   if (email == process.env.EMAIL) return res.sendStatus(400);
 
