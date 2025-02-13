@@ -146,6 +146,8 @@ app.get("/OTP", (req, res) => {
 app.get("/home", async (req, res) => {
   if (!req.session.valid) return res.redirect("/");
 
+  return res.redirect("/");
+
   req.session.personSet = {};
 
   // Get the data from the database
@@ -182,6 +184,8 @@ app.get("/home", async (req, res) => {
 
 app.get("/result", (req, res) => {
   if (!req.session.valid) return res.redirect("/");
+
+  return res.redirect("/");
 
   res.render("result");
 });
