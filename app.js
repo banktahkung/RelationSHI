@@ -188,6 +188,8 @@ app.get("/result", (req, res) => {
 });
 
 app.get("/unexpected", (req, res) => {
+  if(!req.session.valid) return res.redirect("/");
+
   res.render("unexpected");
 });
 
@@ -307,7 +309,10 @@ app.get("/resultData", async (req, res) => {
 });
 
 app.get("/popularity", async (req, res) => {
-  if (!NUM_MATCHING[hash(req.session.email)]) {
+
+  if(!req.session.email) return res.sendStatus(400);
+
+  if (req.session.email && !NUM_MATCHING[hash(req.session.email)]) {
     const { data, error } = await supabase
       .from("UserInformation")
       .select("popularity")
