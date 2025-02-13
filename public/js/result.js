@@ -11,8 +11,9 @@ async function GetPartner() {
     } else {
       // Await the JSON parsing
       const data = await response.json();
+      return data.person;
     }
-    return data.person; // Return the data
+    // Return the data
   } catch (error) {
     console.error("Error fetching test person:", error);
   }
