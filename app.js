@@ -296,13 +296,13 @@ app.get("/resultPerson", async (req, res) => {
           )
         : "/images/logo.png",
       MatchingMessage: People[selectedPerson].MatchingMessage,
-    };
+    }; 
+    
+    // Send the person data to the client
+    res.send({ person: personData });
   } catch (e) {
     return res.sendStatus(400);
   }
-
-  // Send the person data to the client
-  res.send({ person: personData });
 });
 
 app.get("/resultData", async (req, res) => {
