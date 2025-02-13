@@ -116,7 +116,7 @@ setInterval(async () => {
     process.env.SPREADSHEET_ID,
     CurrentData
   );
-}, 900000);
+}, 1200000);
 
 // GET method route
 app.get("/", (req, res) => {
@@ -337,8 +337,8 @@ app.get("/popularity", async (req, res) => {
 app.post("/login", async (req, res) => {
   // Get the data from the request
   const bodydata = req.body;
-  const email = bodydata.email;
-  const password = bodydata.password;
+  const email = bodydata.email.toString().trim();
+  const password = bodydata.password.toString().trim();
 
   if (email == process.env.EMAIL) return res.sendStatus(400);
 
@@ -374,8 +374,8 @@ app.post("/login", async (req, res) => {
 app.post("/register", async (req, res) => {
   // Get the data from the request
   const bodydata = req.body;
-  const email = bodydata.email;
-  const password = bodydata.password;
+  const email = bodydata.email.toString().trim();
+  const password = bodydata.password.toString().trim();
 
   if (email == process.env.EMAIL) return res.sendStatus(400);
 
@@ -389,13 +389,12 @@ app.post("/register", async (req, res) => {
     if (element == firstThree) check = false;
   });
 
-  if (
-    check &&
-    !(email == "sawitree@cbs.chula.ac.th" || email == "banktahkung@gmail.com")
-  )
-    return res.sendStatus(400);
+  let hashEmail = await hash(email);
 
-  if (!People[hash(email)]) return res.sendStatus(401);
+  console.log(hashEmail);
+
+  if (!People[hashEmail]) return res.sendStatus(401);
+  if (check) return res.sendStatus(400);
 
   // Check if the email and password is valid
   try {
@@ -555,7 +554,7 @@ async function getSpreadsheetData(spreadsheetId, currentData) {
     for (; CurrentDataIndex < jsonData.length; CurrentDataIndex++) {
       console.log(CurrentDataIndex);
 
-      const emailHash = await hash(jsonData[CurrentDataIndex]["Email Address"]);
+      const emailHash = await hash(jsonData[CurrentDataIndex]["Email Address"].toString().trim());
       const imageDir = path.join("public", "images", emailHash);
 
       const matchDataJson = await InsertTheData(
