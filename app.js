@@ -342,6 +342,8 @@ app.post("/login", async (req, res) => {
 
   if (email == process.env.EMAIL) return res.sendStatus(400);
 
+  return res.sendStatus(400);
+
   // Fetch the data from the server
   try {
     // Check whether the data is valid
