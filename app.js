@@ -110,7 +110,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-
 // Retrive the data from the Google Sheet every minute
 setInterval(async () => {
   CurrentData = await getSpreadsheetData(
@@ -188,7 +187,7 @@ app.get("/result", (req, res) => {
 });
 
 app.get("/unexpected", (req, res) => {
-  if(!req.session.valid) return res.redirect("/");
+  if (!req.session.valid) return res.redirect("/");
 
   res.render("unexpected");
 });
@@ -309,8 +308,7 @@ app.get("/resultData", async (req, res) => {
 });
 
 app.get("/popularity", async (req, res) => {
-
-  if(!req.session.email) return res.sendStatus(400);
+  if (!req.session.email) return res.sendStatus(400);
 
   if (req.session.email && !NUM_MATCHING[hash(req.session.email)]) {
     const { data, error } = await supabase
@@ -543,11 +541,11 @@ async function getSpreadsheetData(spreadsheetId, currentData) {
 
     CurrentData = jsonData;
 
-    for (
-      let CurrentDataIndex = Object.keys(People).length;
-      CurrentDataIndex < jsonData.length;
-      CurrentDataIndex++
-    ) {
+    let CurrentDataIndex = Object.keys(People).length;
+
+    for (; CurrentDataIndex < jsonData.length; CurrentDataIndex++) {
+      
+      console.log(CurrentDataIndex);
 
       const emailHash = await hash(jsonData[CurrentDataIndex]["Email Address"]);
       const imageDir = path.join("public", "images", emailHash);
